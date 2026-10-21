@@ -1,17 +1,15 @@
 {
-    "user": [
+    "users": [
         {
-            "id": 1,
+            "user_id": 1,
             "name": "tori",
             "tasks": [
                 {
-                    "task_id": 1,
-                    "task_name": "task1",
-                    "task_description": "This is the first task.",
-                    "task_completed": false,
-                    "task_priority": "high",
-                    "task_starttime": "0",
-                    "task_endtime": "100000"
+                    "task_id": "1",
+                    "title": "task1",
+                    "description": "This is the first task.",
+                    "due_date": null,
+                    "status": "todo"
                 }
             ]
         }
