@@ -2,16 +2,24 @@
     "users": [
         {
             "user_id": 1,
-            "name": "tori",
-            "tasks": [
-                {
-                    "task_id": "1",
-                    "title": "task1",
-                    "description": "This is the first task.",
-                    "due_date": null,
-                    "status": "todo"
-                }
-            ]
+            "name": "テストユーザー1",
+            "username": "test-user-1",
+            "password_hash": "scrypt:32768:8:1$frsuTZQ90qreMJHL$15af915dad80fd744980595a00c712b1fea29bbf7a0bdd41dd6daf3bb98420fc6d7e7f0c9c7ca11d764c9a7e61dcb86db8dd43474e7602423de8fffa31cd468c",
+            "tasks": []
+        },
+        {
+            "user_id": 2,
+            "name": "テストユーザー2",
+            "username": "test-user-2",
+            "password_hash": "scrypt:32768:8:1$y6CmYprEx3ZjIi7c$6111e89022066edba1b06a1a71443c3dab7aea1e42635700a10280234641d16dbe407a318bd3f4b238621006f76f1b69d51523e78ab1d5666b184ffd09217919",
+            "tasks": []
+        },
+        {
+            "user_id": 3,
+            "name": "テストユーザー3",
+            "username": "test-user-3",
+            "password_hash": "scrypt:32768:8:1$q9v1v5in3odlvadI$8814b98c9217bd40ae236ad2fea62fe79821e7b430b04f577f1fc4fa1b237b280279fff5effcbec3468e3d78ba726fa8192514d721869ef8dfd41c1af89d53fc",
+            "tasks": []
         }
     ]
 }

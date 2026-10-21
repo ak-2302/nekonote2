@@ -1,6 +1,6 @@
 # バックエンドAPI仕様
 
-認証なしで利用できるシンプルなタスクAPIです。すべてのリクエストとレスポンスはJSON形式です。
+Bearerトークン認証を使用するシンプルなタスクAPIです。すべてのリクエストとレスポンスはJSON形式です。
 
 ## 起動
 
@@ -10,6 +10,68 @@ python server.py
 ```
 
 デフォルトでは`http://localhost:5000`で起動します。
+
+## 実装構成
+
+`server.py`は次の責務に分けています。
+
+- `JsonStore`: `data.json`の読み書きとユーザー検索
+- `AuthService`: パスワードハッシュとBearerトークンの管理
+- `Validator`: ユーザー・ログイン・タスク入力の検証
+- `Server`: Flaskルート、認証、レスポンスの組み立て
+
+## 認証
+
+### `POST /api/users`
+
+ユーザーを登録します。`password`は8文字以上で指定してください。サーバーにはパスワードそのものではなく、ハッシュ値だけを保存します。
+
+```json
+{
+  "name": "tori",
+  "username": "tori",
+  "password": "password123"
+}
+```
+
+### `POST /api/login`
+
+ログインに成功するとBearerアクセストークンを返します。
+
+```json
+{
+  "username": "tori",
+  "password": "password123"
+}
+```
+
+レスポンス:
+
+```json
+{
+  "access_token": "token",
+  "token_type": "Bearer",
+  "user": {
+    "user_id": 2,
+    "name": "tori",
+    "username": "tori"
+  }
+}
+```
+
+以降の認証が必要なリクエストには、次のヘッダーを付けます。
+
+```http
+Authorization: Bearer token
+```
+
+### `POST /api/logout`
+
+ログアウトしてアクセストークンを無効化します。認証が必要です。
+
+### `GET /api/me`
+
+ログイン中のユーザー情報を取得します。認証が必要です。
 
 ## `GET /api/ping`
 
@@ -21,7 +83,7 @@ python server.py
 
 # ユーザーAPI
 
-認証はありません。ユーザーIDは作成時にサーバーが自動発行します。ユーザーを削除すると、そのユーザーのタスクも削除されます。
+ユーザー登録以外のユーザー操作には認証が必要です。ユーザーIDは作成時にサーバーが自動発行されます。ユーザーを削除すると、そのユーザーのタスクも削除されます。
 
 ## `GET /api/users`
 
@@ -62,7 +124,39 @@ python server.py
 
 ユーザーを削除します。成功時は`204 No Content`を返します。
 
-# タスクAPI
+# タスクAPI（認証必須）
+
+ログイン後は、ユーザーIDをURLに指定せず、`/api/task`を使用します。タスクはトークンのユーザー自身のものだけが対象です。
+
+## `GET /api/task`
+
+自分のタスク一覧を取得します。`status`で絞り込めます。
+
+## `POST /api/task`
+
+自分のタスクを追加します。
+
+```json
+{
+  "title": "task2",
+  "description": "新しいタスク",
+  "due_date": "2026-10-30",
+  "status": "todo"
+}
+```
+
+## `PATCH /api/task/{task_id}`
+
+自分のタスクを更新します。
+
+## `DELETE /api/task/{task_id}`
+
+自分のタスクを削除します。
+
+## 旧タスクAPI
+
+既存の`/api/users/{user_id}/tasks`も互換性のため残しています。新規クライアントは、ユーザーIDのなりすましを防ぐため認証付きの`/api/task`を使用してください。
+
 ## `GET /api/users/{user_id}/tasks`
 
 ユーザーのタスク一覧を取得します。`status`で`todo`、`in_progress`、`done`を指定して絞り込めます。
@@ -134,7 +228,10 @@ GET /api/users/1/tasks?status=todo
 | 状況                   |        ステータス |
 | ---------------------- | ----------------: |
 | 入力値不正             | `400 Bad Request` |
+| 認証情報がない・無効   | `401 Unauthorized` |
+| 他ユーザーの操作       | `403 Forbidden` |
 | ユーザー・タスク不存在 |   `404 Not Found` |
+| 不正なURL               |   `404 Not Found` |
 
 ```json
 {
@@ -144,6 +241,17 @@ GET /api/users/1/tasks?status=todo
     "details": {
       "title": "titleは必須です"
     }
+  }
+}
+```
+
+存在しないURLにアクセスした場合は、次のレスポンスを返します。
+
+```json
+{
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "指定されたURLが見つかりません"
   }
 }
 ```
