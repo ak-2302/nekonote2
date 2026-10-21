@@ -7,7 +7,7 @@ from flask import Flask, jsonify, request
 
 
 class Server:
-    def __init__(self, host="localhost", port=5000):
+    def __init__(self, host="localhost", port=8001):
         self.host = host
         self.port = port
         self.app = Flask(__name__)
