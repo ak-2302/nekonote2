@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <!-- ページ全体の基本設定と外部ファイルの読み込み -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>トリカカリ</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./asset/style.css">
+</head>
+
+<body>
+    <h1>サービス名</h1>
+    <!-- タスク入力フォーム（時間・タスク名・登録ボタン） -->
+    <div id="register_container">
+        <div class="element">
+            <p>日付と時間</p>
+        </div>
+        <div class="element">
+            <input type="date" id="task_date">
+            <input type="time" id="task_time">
+        </div>
+        <div class="element">
+            <p>タスク名</p>
+        </div>
+        <div class="element">
+            <input type="text" id="task_name" placeholder="タスクを入力">
+        </div>
+        <div class="element">
+            <button id="add-btn">登録</button>
+        </div>
+    </div>
+
+    <!-- 登録されたタスクが順番に表示されるリスト -->
+    <ul id="task_list"></ul>
+
+
+    <!-- タスク開始ボタン（指定URLへ遷移） -->
+    <div>
+        <a href="[EnterURL]">
+            <button>タスク開始</button>
+        </a>
+    </div>
+    <button id="open_register">タスクを追加</button>
+    <script src="./asset/script.js"></script>
+</body>
+
+</html>
