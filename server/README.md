@@ -73,6 +73,38 @@ Authorization: Bearer token
 
 ログイン中のユーザー情報を取得します。認証が必要です。
 
+## API通信の順序
+
+クライアントは、次の順序で認証付きAPIを利用します。
+
+1. `POST /api/users`でユーザーを登録します。パスワードはサーバー側でハッシュ化して保存されます。
+2. `POST /api/login`に`username`と`password`を送信します。
+3. サーバーが認証に成功すると、`access_token`を返します。
+4. タスクAPIを呼び出すときは、毎回次のヘッダーにトークンを付けます。
+
+   ```http
+   Authorization: Bearer <access_token>
+   ```
+
+5. サーバーはトークンからユーザーを特定し、そのユーザー自身のタスクだけを処理します。
+6. 利用を終えるときは`POST /api/logout`を呼び出し、トークンを無効化します。
+
+```text
+ユーザー登録
+  POST /api/users
+      ↓
+ログイン
+  POST /api/login
+      ↓ access_token
+タスク操作
+  GET/POST/PATCH/DELETE /api/task
+      ↓ Authorizationヘッダー
+ログアウト
+  POST /api/logout
+```
+
+トークンがない、期限切れ、または無効な場合は`401 Unauthorized`を返します。
+
 ## `GET /api/ping`
 
 サーバーの起動確認。
