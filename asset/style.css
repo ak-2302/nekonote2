@@ -2,7 +2,7 @@
 :root {
     --bg: #f6f5f1;
     --text: #2b2b2b;
-    --sub: #dc3523;
+    --sub: #ff0000;
     --track: #e4e1d8;
     --accent: #3d8b6e;
     --btn-bg: #ffffff;
@@ -10,11 +10,11 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg: #1c1d1f;
+        --bg: #454647;
         --text: #ecebe7;
         --sub: #9a978f;
         --track: #34363a;
-        --accent: #6cc3a0;
+        --accent: #9645dd;
         --btn-bg: #26282b;
     }
 }
@@ -86,7 +86,7 @@ body {
     stroke: var(--accent);
     stroke-width: 12;
     stroke-linecap: round;
-    transition: stroke-dashoffset 1s linear, stroke .3s;
+    transition: stroke .3s; /* 動きはJSで毎フレーム計算するので、色の変化だけ */
 }
 
 .ring.is-paused .ring-bar {
