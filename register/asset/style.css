@@ -1,0 +1,54 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+
+#register_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    height: 80vh;
+    margin: 10%;
+    position: absolute;
+    background-color: aqua;
+    border-radius: 2rem;
+    border-style: solid;
+    border-color: #f0f0f0;
+    padding: 10%;
+}
+
+#register_container>.element {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+}
+
+#task-date {
+    padding: 0.5rem;
+}
+
+#task-time {
+    padding: 0.5rem;
+}
+
+#add-btn {
+    padding: 0.5rem;
+    width: 100%;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
