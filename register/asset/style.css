@@ -65,3 +65,19 @@ body {
     cursor: pointer;
     z-index: 1;
 }
+
+input[type="text"] {
+    padding: 0.5rem;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid;
+    border-radius: 0.5rem;
+    border-color: #ff00ff;
+}
+
+#register_container>.element>p {
+    margin: 0;
+    padding: 0;
+    font-size: 2rem;
+    font-weight: bold;
+}
