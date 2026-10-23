@@ -4,17 +4,17 @@
     --text: #2b2b2b;
     --sub: #ff0000;
     --track: #e4e1d8;
-    --accent: #3d8b6e;
+    --accent: #62d3a9;
     --btn-bg: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg: #454647;
+        --bg: #1c1d1f;
         --text: #ecebe7;
         --sub: #9a978f;
         --track: #34363a;
-        --accent: #9645dd;
+        --accent: #ca81eb;
         --btn-bg: #26282b;
     }
 }
@@ -156,4 +156,37 @@ body {
     background: var(--accent);
     color: #fff;
     border: none;
+}
+
+/* 完了後の表示 */
+.ring.is-done .remaining {
+    font-size: clamp(22px, 7vw, 30px);
+    font-weight: 700;
+}
+
+/* 終了の確認ポップアップ */
+.confirm {
+    margin: auto; /* 先頭の * { margin: 0 } で中央寄せが消えるので戻す */
+    width: min(320px, calc(100% - 32px));
+    padding: 24px 20px 20px;
+    border: none;
+    border-radius: 18px;
+    background: var(--btn-bg);
+    color: var(--text);
+    text-align: center;
+}
+
+.confirm::backdrop {
+    background: rgba(0, 0, 0, .4);
+}
+
+.confirm-text {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 12px;
 }
