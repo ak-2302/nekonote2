@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <!-- ページ全体の基本設定と外部ファイルの読み込み -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>トリカカリ</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./asset/style.css">
+</head>
+
+<body>
+    <h1>サービス名</h1>
+
+    <!-- タスク入力フォーム（時間・タスク名・登録ボタン） -->
+    <div>
+        <input type="time" id="task-time">
+        <input type="text" id="task-name" placeholder="タスクを入力">
+        <button id="add-btn">登録</button>
+    </div>
+
+    <!-- 登録されたタスクが順番に表示されるリスト -->
+    <ul id="task-list"></ul>
+
+    <script>
+        // DOM要素の取得
+        const taskTimeInput = document.getElementById('task-time');
+        const taskNameInput = document.getElementById('task-name');
+        const addBtn = document.getElementById('add-btn');
+        const taskList = document.getElementById('task-list');
+
+        // タスクデータを保存する配列
+        let tasks = [];
+
+        // 「登録」ボタンが押されたときの処理
+        addBtn.addEventListener('click', () => {
+            const time = taskTimeInput.value;
+            const name = taskNameInput.value;
+
+            // 未入力があれば処理を中断
+            if (!time || !name) return;
+
+            // 一意のIDを持たせたタスクオブジェクトを作成
+            const newTask = {
+                id: Date.now(),
+                time: time,
+                name: name
+            };
+
+            // 配列に追加し、時間順にソート
+            tasks.push(newTask);
+            tasks.sort((a, b) => a.time.localeCompare(b.time));
+
+            // 一覧の再描画と入力欄のクリア
+            renderTasks();
+            taskTimeInput.value = '';
+            taskNameInput.value = '';
+        });
+
+        // タスクを削除する関数
+        function deleteTask(id) {
+            tasks = tasks.filter(task => task.id !== id);
+            renderTasks();
+        }
+
+        // タスクを編集する関数（入力欄に戻して一覧から一時除外）
+        function editTask(id) {
+            const task = tasks.find(task => task.id === id);
+            if (!task) return;
+
+            taskTimeInput.value = task.time;
+            taskNameInput.value = task.name;
+
+            deleteTask(id);
+        }
+
+        // タスク一覧を画面に描画する関数
+        function renderTasks() {
+            taskList.innerHTML = '';
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                
+                // タスク情報と編集・削除ボタンを表示
+                li.innerHTML = `
+                    <span>${task.time} - ${task.name}</span>
+                    <button onclick="editTask(${task.id})">編集</button>
+                    <button onclick="deleteTask(${task.id})">削除</button>
+                `;
+                
+                taskList.appendChild(li);
+            });
+        }
+    </script>
+
+    <!-- タスク開始ボタン（指定URLへ遷移） -->
+    <div>
+        <a href="[EnterURL]">
+            <button>タスク開始</button>
+        </a>
+    </div>
+</body>
+
+</html>

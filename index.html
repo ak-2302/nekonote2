@@ -3,84 +3,47 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>トリカカリ</title>
 
-    <l ink rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="./asset/style.css">
+    <script src="./asset/main.js" defer></script>
 </head>
 
-
 <body>
-    <header>
-    <h1>トリカカリ</h1>
-    </header>
-    <h1>家事</h1>
+    <header class="app-header">トリカカリ</header>
 
- 
-    <!-- タイマー表示（初期値1分） -->
-    <div id="timer" class="timer-display">01:00</div>
+    <main class="running">
+        <!-- タスク名 -->
+        <h1 class="task-title" id="taskTitle">家事</h1>
 
-    <!-- 再開ボタンを追加したボタン構造 -->
-    <div class="button-row">
-        <div class="button-area">
-            <button onclick="pauseTimer()">一時停止</button>
+        <!-- タイマー（円グラフ＋残り時間） -->
+        <div class="ring" id="ring" role="timer">
+            <svg viewBox="0 0 200 200" aria-hidden="true">
+                <circle class="ring-track" cx="100" cy="100" r="90" />
+                <circle class="ring-bar" id="ringBar" cx="100" cy="100" r="90" />
+            </svg>
+            <div class="ring-center">
+                <div class="remaining" id="timer">01:00</div>
+                <div class="end-time" id="endTime"></div>
+            </div>
         </div>
 
-        <div class="button-area">
-            <button onclick="startTimer()">再開</button>
+        <!-- 一時停止／再開は1つのボタンで切り替え -->
+        <div class="actions">
+            <button type="button" class="btn btn-pause" id="pauseBtn">一時停止</button>
+            <button type="button" class="btn btn-end" id="endBtn">終了</button>
         </div>
+    </main>
 
-        <div class="button-area">
-            <button onclick="stopTimer()">終了ボタン</button>
+    <!-- 終了の確認ポップアップ -->
+    <dialog class="confirm" id="confirmDialog">
+        <p class="confirm-text">本当に終わりましたか？</p>
+        <div class="confirm-actions">
+            <button type="button" class="btn btn-pause" id="cancelEndBtn">まだ</button>
+            <button type="button" class="btn btn-end" id="confirmEndBtn">終わった</button>
         </div>
-    </div>
-
-    <script>
-        let timeLeft = 60; // 1分（60秒）
-        let timerId = null;
-        const timerElement = document.getElementById('timer');
-
-        // 表示の更新
-        function updateDisplay() {
-            const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-            const seconds = String(timeLeft % 60).padStart(2, '0');
-            timerElement.textContent = `${minutes}:${seconds}`;
-        }
-
-        // タイマーの開始・再開
-        function startTimer() {
-            if (timerId !== null || timeLeft <= 0) return; // 既に動いているか、0秒のときは何もしない
-            timerId = setInterval(() => {
-                if (timeLeft > 0) {
-                    timeLeft--;
-                    updateDisplay();
-                } else {
-                    pauseTimer();
-                    alert('時間です！');
-                }
-            }, 1000);
-        }
-
-        // 一時停止
-        function pauseTimer() {
-            clearInterval(timerId);
-            timerId = null;
-        }
-
-        // 終了ボタン（タイマーを止めて1分に戻す）
-        function stopTimer() {
-            pauseTimer();
-            timeLeft = 60;
-            updateDisplay();
-        }
-
-        // ページ読み込み完了と同時にスタート
-        window.onload = function() {
-            updateDisplay();
-            startTimer();
-        };
-    </script>
+    </dialog>
 </body>
 
 </html>
