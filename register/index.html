@@ -17,12 +17,12 @@
     <div id="register_container">
         <div class="element">日付と時間</div>
         <div class="element">
-            <input type="date" id="task-date">
-            <input type="time" id="task-time">
+            <input type="date" id="task_date">
+            <input type="time" id="task_time">
         </div>
         <div class="element">タスク名</div>
         <div class="element">
-            <input type="text" id="task-name" placeholder="タスクを入力">
+            <input type="text" id="task_name" placeholder="タスクを入力">
         </div>
         <div class="element">
             <button id="add-btn">登録</button>
@@ -30,46 +30,8 @@
     </div>
 
     <!-- 登録されたタスクが順番に表示されるリスト -->
-    <ul id="task-list"></ul>
+    <ul id="task_list"></ul>
 
-    <script>
-        // DOM要素の取得
-        const taskTimeInput = document.getElementById('task-time');
-        const taskNameInput = document.getElementById('task-name');
-        const addBtn = document.getElementById('add-btn');
-        const taskList = document.getElementById('task-list');
-
-        // タスクデータを保存する配列
-        let tasks = [];
-
-        // 「登録」ボタンが押されたときの処理
-        addBtn.addEventListener('click', () => {
-            const time = taskTimeInput.value;
-            const name = taskNameInput.value;
-
-            // 未入力があれば処理を中断
-            if (!time || !name) return;
-
-            // 配列にタスクを追加し、時間順にソート
-            tasks.push({ time, name });
-            tasks.sort((a, b) => a.time.localeCompare(b.time));
-
-            // 一覧の再描画と入力欄のクリア
-            renderTasks();
-            taskTimeInput.value = '';
-            taskNameInput.value = '';
-        });
-
-        // タスク一覧を画面に描画する関数
-        function renderTasks() {
-            taskList.innerHTML = '';
-            tasks.forEach(task => {
-                const li = document.createElement('li');
-                li.textContent = `${task.time} - ${task.name}`;
-                taskList.appendChild(li);
-            });
-        }
-    </script>
 
     <!-- タスク開始ボタン（指定URLへ遷移） -->
     <div>

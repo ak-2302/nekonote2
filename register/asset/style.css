@@ -25,6 +25,7 @@ body {
     border-style: solid;
     border-color: #f0f0f0;
     padding: 10%;
+    z-index: 10;
 }
 
 #register_container>.element {
@@ -51,4 +52,16 @@ body {
     border: none;
     border-radius: 0.5rem;
     cursor: pointer;
+}
+
+#open_register {
+    position: absolute;
+    bottom: 3rem;
+    right: 3rem;
+    padding: 1rem;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    z-index: 1;
 }
