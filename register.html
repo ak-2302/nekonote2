@@ -42,8 +42,15 @@
             // 未入力があれば処理を中断
             if (!time || !name) return;
 
-            // 配列にタスクを追加し、時間順にソート
-            tasks.push({ time, name });
+            // 一意のIDを持たせたタスクオブジェクトを作成
+            const newTask = {
+                id: Date.now(),
+                time: time,
+                name: name
+            };
+
+            // 配列に追加し、時間順にソート
+            tasks.push(newTask);
             tasks.sort((a, b) => a.time.localeCompare(b.time));
 
             // 一覧の再描画と入力欄のクリア
@@ -52,12 +59,36 @@
             taskNameInput.value = '';
         });
 
+        // タスクを削除する関数
+        function deleteTask(id) {
+            tasks = tasks.filter(task => task.id !== id);
+            renderTasks();
+        }
+
+        // タスクを編集する関数（入力欄に戻して一覧から一時除外）
+        function editTask(id) {
+            const task = tasks.find(task => task.id === id);
+            if (!task) return;
+
+            taskTimeInput.value = task.time;
+            taskNameInput.value = task.name;
+
+            deleteTask(id);
+        }
+
         // タスク一覧を画面に描画する関数
         function renderTasks() {
             taskList.innerHTML = '';
             tasks.forEach(task => {
                 const li = document.createElement('li');
-                li.textContent = `${task.time} - ${task.name}`;
+                
+                // タスク情報と編集・削除ボタンを表示
+                li.innerHTML = `
+                    <span>${task.time} - ${task.name}</span>
+                    <button onclick="editTask(${task.id})">編集</button>
+                    <button onclick="deleteTask(${task.id})">削除</button>
+                `;
+                
                 taskList.appendChild(li);
             });
         }
