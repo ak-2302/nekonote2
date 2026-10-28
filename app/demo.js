@@ -1,5 +1,6 @@
 const TASK_DATABASE = 'nekonote2';
 const TASK_STORE = 'tasks';
+let databaseInitialized = false;
 
 const FALLBACK_DEMO_DATA = {
     tasks: [
@@ -49,6 +50,15 @@ function openTaskDatabase() {
     });
 }
 
+function deleteDatabase(databaseName) {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.deleteDatabase(databaseName);
+        request.onsuccess = resolve;
+        request.onerror = () => reject(request.error);
+        request.onblocked = resolve;
+    });
+}
+
 function readTasks(database) {
     return new Promise((resolve, reject) => {
         const request = database.transaction(TASK_STORE, 'readonly')
@@ -80,7 +90,14 @@ async function loadDemoData() {
 }
 
 async function initializeTaskDatabase() {
+    if (databaseInitialized) return openTaskDatabase();
+
+    // registerを開いたときだけ現行DBも初期化し、デモデータから開始する
+    const isRegisterPage = window.location.pathname.includes('/register/');
+    await deleteDatabase('taskdb');
+    if (isRegisterPage) await deleteDatabase(TASK_DATABASE);
     const database = await openTaskDatabase();
+    databaseInitialized = true;
     const tasks = await readTasks(database);
     const migratedTasks = tasks.map(normalizeTask);
     const demoTasks = (await loadDemoData()).tasks;

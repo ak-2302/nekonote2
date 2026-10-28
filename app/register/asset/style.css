@@ -159,30 +159,6 @@ body {
     font-size: 13px;
 }
 
-.next-task-timer-button {
-    position: relative;
-    z-index: 1;
-    justify-self: start;
-    margin-top: 8px;
-    padding: 10px 14px;
-    color: var(--text);
-    background: #fff;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.next-task-timer-button:hover {
-    color: #fff;
-    background: var(--accent-dark);
-}
-
-.next-task-timer-button:focus-visible {
-    outline: 3px solid rgba(255, 255, 255, .45);
-    outline-offset: 2px;
-}
-
 #task_list {
     display: flex;
     flex-direction: column;
@@ -253,6 +229,34 @@ body {
 .task-date {
     color: var(--muted);
     font-size: 12px;
+}
+
+.task-duration {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.start-timer-button {
+    flex: 0 0 auto;
+    padding: 9px 12px;
+    color: var(--accent-dark);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.start-timer-button:hover {
+    color: #fff;
+    background: var(--accent-dark);
+    border-color: var(--accent-dark);
+}
+
+.start-timer-button:focus-visible {
+    outline: 3px solid rgba(98, 198, 160, .35);
+    outline-offset: 2px;
 }
 
 .add-task-button {

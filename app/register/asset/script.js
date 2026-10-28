@@ -8,7 +8,6 @@ const next_task = document.getElementById('next_task');
 const next_task_time = document.getElementById('next_task_time');
 const next_task_name = document.getElementById('next_task_name');
 const next_task_date = document.getElementById('next_task_date');
-const next_task_timer = document.getElementById('next_task_timer');
 const toast = document.getElementById('toast');
 const toast_message = document.getElementById('toast_message');
 const task_time = document.getElementById('task_time');
@@ -55,6 +54,7 @@ add_btn.addEventListener('click', async () => {
         done: false
     };
     await saveTask(task);
+    console.log('[task-added]', JSON.stringify(task, null, 2));
     tasks = await getTasks();
     renderTasks();
     task_time.value = '';
@@ -83,7 +83,6 @@ function renderTasks() {
     next_task_time.textContent = formatTime(nextTask.start);
     next_task_name.textContent = nextTask.name;
     next_task_date.textContent = formatDate(nextTask.start);
-    next_task_timer.href = `../timer/index.html?${new URLSearchParams({ task: nextTask.id })}`;
 
     activeTasks.forEach(task => {
         const li = document.createElement('li');
@@ -93,7 +92,11 @@ function renderTasks() {
             <span class="task-info">
                 <span class="task-name"></span>
                 <span class="task-date">${formatDate(task.start)}</span>
+                <span class="task-duration">所要時間：${formatDuration(task.end - task.start)}</span>
             </span>
+            <a class="start-timer-button" href="../timer/index.html?${new URLSearchParams({ task: task.id })}">
+                タイマーを開始
+            </a>
         `;
         li.querySelector('.task-name').textContent = task.name;
         task_list.appendChild(li);
@@ -117,6 +120,14 @@ function formatTime(unixSeconds) {
         minute: '2-digit',
         hour12: false
     });
+}
+
+function formatDuration(durationSeconds) {
+    const minutes = Math.round(durationSeconds / 60);
+    if (minutes < 60) return `${minutes}分`;
+    const hours = Math.floor(minutes / 60);
+    const remainder = minutes % 60;
+    return remainder ? `${hours}時間${remainder}分` : `${hours}時間`;
 }
 
 function showToast(message) {
