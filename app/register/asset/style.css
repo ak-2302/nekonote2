@@ -51,6 +51,17 @@ body {
     border-radius: 50%;
 }
 
+.login-button {
+    min-height: 38px;
+    padding: 0 14px;
+    color: var(--accent-dark);
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
 .header-mark {
     width: 42px;
     height: 42px;
@@ -62,6 +73,12 @@ body {
     align-items: end;
     justify-content: space-between;
     margin-bottom: 20px;
+}
+
+.auth-prompt {
+    margin: 0 0 20px;
+    color: var(--muted);
+    font-size: 14px;
 }
 
 .intro h2 {
@@ -304,6 +321,31 @@ body {
     box-shadow: var(--shadow);
 }
 
+.login-modal {
+    width: min(100%, 380px);
+    padding: 24px;
+    background: var(--surface);
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+}
+
+.login-error {
+    margin: -4px 0 16px;
+    color: #c44b4b;
+    font-size: 13px;
+}
+
+.login-submit {
+    width: 100%;
+    min-height: 48px;
+    color: #fff;
+    background: var(--accent-dark);
+    border: 0;
+    border-radius: 11px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
 .dialog-header {
     display: flex;
     align-items: start;
@@ -358,6 +400,23 @@ body {
     border: 1px solid var(--line);
     border-radius: 11px;
     outline: none;
+}
+
+.form-field textarea {
+    width: 100%;
+    min-height: 88px;
+    padding: 12px 13px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    outline: none;
+    resize: vertical;
+}
+
+.form-field textarea:focus {
+    border-color: var(--accent-dark);
+    box-shadow: 0 0 0 3px rgba(98, 198, 160, .18);
 }
 
 .form-field input:focus {

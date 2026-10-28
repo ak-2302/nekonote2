@@ -2,3 +2,4 @@
 .venv
 env
 ./server/__pycache__/
+.playwright-cli

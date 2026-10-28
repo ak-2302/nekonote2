@@ -13,10 +13,76 @@ const toast_message = document.getElementById('toast_message');
 const task_time = document.getElementById('task_time');
 const task_duration = document.getElementById('task_duration');
 const task_name = document.getElementById('task_name');
+const task_description = document.getElementById('task_description');
 const task_list = document.getElementById('task_list');
+const open_login_btn = document.getElementById('open_login');
+const close_login_btn = document.getElementById('close_login');
+const login_backdrop = document.getElementById('login_backdrop');
+const login_form = document.getElementById('login_form');
+const login_error = document.getElementById('login_error');
 let toast_timer;
 let expiry_timer;
 let tasks = [];
+
+function showLoggedOut() {
+    tasks = [];
+    clearTimeout(expiry_timer);
+    next_task.hidden = true;
+    task_list.innerHTML = '';
+    task_count.textContent = 'ログインしてください';
+    document.getElementById('auth_prompt').hidden = false;
+    open_register_btn.hidden = true;
+    open_login_btn.textContent = 'ログイン';
+    login_backdrop.hidden = false;
+    document.getElementById('login_username').focus();
+}
+
+async function showLoggedIn() {
+    tasks = await getTasks();
+    document.getElementById('auth_prompt').hidden = true;
+    open_register_btn.hidden = false;
+    open_login_btn.textContent = 'ログアウト';
+    renderTasks();
+}
+
+open_login_btn.addEventListener('click', () => {
+    if (localStorage.getItem('access_token')) {
+        localStorage.removeItem('access_token');
+        showLoggedOut();
+        return;
+    }
+    login_backdrop.hidden = false;
+    document.getElementById('login_username').focus();
+});
+
+close_login_btn.addEventListener('click', () => {
+    login_backdrop.hidden = true;
+});
+
+login_backdrop.addEventListener('click', (event) => {
+    if (event.target === login_backdrop) login_backdrop.hidden = true;
+});
+
+login_form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    login_error.hidden = true;
+    try {
+        const username = document.getElementById('login_username').value.trim();
+        const password = document.getElementById('login_password').value;
+        try {
+            await login(username, password);
+        } catch (error) {
+            if (!error.message.includes('正しくありません')) throw error;
+            await registerUser(username, password);
+        }
+        login_backdrop.hidden = true;
+        await showLoggedIn();
+        showToast('ログインしました');
+    } catch (error) {
+        login_error.textContent = error.message;
+        login_error.hidden = false;
+    }
+});
 
 open_register_btn.addEventListener('click', () => {
     modal_backdrop.hidden = false;
@@ -34,6 +100,7 @@ modal_backdrop.addEventListener('click', (event) => {
 add_btn.addEventListener('click', async () => {
     const time = task_time.value;
     const name = task_name.value.trim();
+    const description = task_description.value.trim();
     const date = document.getElementById('task_date').value;
     const durationMinutes = Number(task_duration.value);
 
@@ -48,17 +115,22 @@ add_btn.addEventListener('click', async () => {
     const task = {
         id: crypto.randomUUID(),
         name,
-        description: '',
+        description,
         start,
         end: start + durationMinutes * 60,
         done: false
     };
-    await saveTask(task);
-    tasks = await getTasks();
-    renderTasks();
+    try {
+        await saveTask(task);
+        await showLoggedIn();
+    } catch (error) {
+        showToast(error.message);
+        return;
+    }
     task_time.value = '';
     task_duration.value = '';
     task_name.value = '';
+    task_description.value = '';
     document.getElementById('task_date').value = '';
     modal_backdrop.hidden = true;
 });
@@ -138,7 +210,11 @@ function showToast(message) {
     }, 3000);
 }
 
-getTasks().then((storedTasks) => {
-    tasks = storedTasks;
-    renderTasks();
-}).catch(() => showToast('タスクを読み込めませんでした'));
+if (localStorage.getItem('access_token')) {
+    showLoggedIn().catch(() => {
+        localStorage.removeItem('access_token');
+        showLoggedOut();
+    });
+} else {
+    showLoggedOut();
+}

@@ -18,9 +18,11 @@
             <h1>トリカカリ</h1>
         </div>
         <span class="header-mark" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+        <button class="login-button" id="open_login" type="button">ログイン</button>
     </header>
 
     <main class="page-content">
+        <p class="auth-prompt" id="auth_prompt">ログインすると自分のタスクを確認・追加できます。</p>
         <section class="intro">
             <span class="task-count" id="task_count">0件</span>
         </section>
@@ -46,7 +48,7 @@
 
     </main>
 
-    <button class="add-task-button" id="open_register" type="button">
+    <button class="add-task-button" id="open_register" type="button" hidden>
         <i class="fa-solid fa-plus" aria-hidden="true"></i>
         <span>タスクを追加</span>
     </button>
@@ -66,6 +68,10 @@
                 <label for="task_name">タスク名</label>
                 <input type="text" id="task_name" placeholder="例：資料を確認する">
             </div>
+            <div class="form-field">
+                <label for="task_description">説明</label>
+                <textarea id="task_description" rows="3" placeholder="例：第3章を読み、気づいた点をメモする"></textarea>
+            </div>
             <div class="form-row">
                 <div class="form-field">
                     <label for="task_date">日付</label>
@@ -82,6 +88,24 @@
             </div>
             <button id="add-btn" type="button">登録する</button>
         </div>
+    </div>
+    <div class="modal-backdrop" id="login_backdrop" hidden>
+        <form class="login-modal" id="login_form" role="dialog" aria-modal="true" aria-labelledby="login_title">
+            <div class="dialog-header">
+                <h2 id="login_title">ログイン</h2>
+                <button class="close-button" id="close_login" type="button" aria-label="閉じる">×</button>
+            </div>
+            <div class="form-field">
+                <label for="login_username">ユーザー名</label>
+                <input id="login_username" type="text" autocomplete="username" required>
+            </div>
+            <div class="form-field">
+                <label for="login_password">パスワード</label>
+                <input id="login_password" type="password" autocomplete="current-password" required>
+            </div>
+            <p class="login-error" id="login_error" role="alert" hidden></p>
+            <button class="login-submit" type="submit">ログインする</button>
+        </form>
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite" hidden>
         <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
