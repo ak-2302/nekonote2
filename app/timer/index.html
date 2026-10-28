@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>トリカカリ</title>
+
+    <link rel="stylesheet" href="../asset/universal.css">
+    <link rel="stylesheet" href="./asset/style.css">
+    <script src="../demo.js" defer></script>
+    <script src="./asset/main.js" defer></script>
+</head>
+
+<body>
+    <header class="app-header" href="../register/index.html">トリカカリ</header>
+
+    <main class="running">
+        <!-- タスク名 -->
+        <h1 class="task-title" id="taskTitle">家事</h1>
+
+        <!-- タイマー（円グラフ＋残り時間） -->
+        <div class="ring" id="ring" role="timer">
+            <svg viewBox="0 0 200 200" aria-hidden="true">
+                <circle class="ring-track" cx="100" cy="100" r="90" />
+                <circle class="ring-bar" id="ringBar" cx="100" cy="100" r="90" />
+            </svg>
+            <div class="ring-center">
+                <div class="remaining" id="timer">01:00</div>
+                <div class="end-time" id="endTime"></div>
+            </div>
+        </div>
+
+        <!-- 一時停止／再開は1つのボタンで切り替え -->
+        <div class="actions">
+            <button type="button" class="btn btn-pause" id="pauseBtn">一時停止</button>
+            <button type="button" class="btn btn-end" id="endBtn">終了</button>
+        </div>
+    </main>
+
+    <!-- 終了の確認ポップアップ -->
+    <dialog class="confirm" id="confirmDialog">
+        <p class="confirm-text">本当に終わりましたか？</p>
+        <div class="confirm-actions">
+            <button type="button" class="btn btn-pause" id="cancelEndBtn">まだ</button>
+            <button type="button" class="btn btn-end" id="confirmEndBtn">終わった</button>
+        </div>
+    </dialog>
+</body>
+
+</html>

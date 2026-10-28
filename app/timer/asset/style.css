@@ -1,0 +1,183 @@
+/* 色の設定（ダークモード対応） */
+:root {
+    --bg: #f6f5f1;
+    --text: #2b2b2b;
+    --sub: #ff0000;
+    --track: #e4e1d8;
+    --accent: #62d3a9;
+    --btn-bg: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #1c1d1f;
+        --text: #ecebe7;
+        --sub: #9a978f;
+        --track: #34363a;
+        --accent: #ca81eb;
+        --btn-bg: #26282b;
+    }
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+}
+
+/* サービス名 */
+.app-header {
+    padding: 16px 0;
+    font-size: 14px;
+    color: var(--sub);
+    letter-spacing: .05em;
+}
+
+/* 画面中央のまとまり */
+.running {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    padding-bottom: 48px;
+    text-align: center;
+}
+
+/* タスク名 */
+.task-title {
+    font-size: clamp(26px, 8vw, 36px);
+    font-weight: 700;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+/* 円グラフ */
+.ring {
+    position: relative;
+    width: min(72vw, 280px);
+    aspect-ratio: 1;
+}
+
+.ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg); /* 12時の位置から減らす */
+}
+
+.ring-track {
+    fill: none;
+    stroke: var(--track);
+    stroke-width: 12;
+}
+
+.ring-bar {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 12;
+    stroke-linecap: round;
+    transition: stroke .3s; /* 動きはJSで毎フレーム計算するので、色の変化だけ */
+}
+
+.ring.is-paused .ring-bar {
+    stroke: var(--sub);
+}
+
+.ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.remaining {
+    font-size: clamp(40px, 13vw, 56px);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.ring.is-paused .remaining {
+    color: var(--sub);
+}
+
+.end-time {
+    font-size: 15px;
+    color: var(--sub);
+}
+
+/* ボタン */
+.actions {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+}
+
+.btn {
+    flex: 1;
+    min-height: 52px;
+    border-radius: 14px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn:active {
+    transform: scale(.97);
+}
+
+.btn:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+.btn-pause {
+    background: var(--btn-bg);
+    color: var(--text);
+    border: 1px solid var(--track);
+}
+
+.btn-end {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+}
+
+/* 完了後の表示 */
+.ring.is-done .remaining {
+    font-size: clamp(22px, 7vw, 30px);
+    font-weight: 700;
+}
+
+/* 終了の確認ポップアップ */
+.confirm {
+    margin: auto; /* 先頭の * { margin: 0 } で中央寄せが消えるので戻す */
+    width: min(320px, calc(100% - 32px));
+    padding: 24px 20px 20px;
+    border: none;
+    border-radius: 18px;
+    background: var(--btn-bg);
+    color: var(--text);
+    text-align: center;
+}
+
+.confirm::backdrop {
+    background: rgba(0, 0, 0, .4);
+}
+
+.confirm-text {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 12px;
+}
