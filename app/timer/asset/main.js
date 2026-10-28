@@ -1,10 +1,13 @@
-const TOTAL_MS = 60 * 1000; // タイマーの長さ（ミリ秒）
-let remainingMs = TOTAL_MS; // 一時停止中の残り時間
+let totalMs = 60 * 1000;    // タスクのend - start（ミリ秒）
+let taskStartMs = Date.now();
+let taskEndMs = taskStartMs + totalMs;
+let remainingMs = totalMs;  // 一時停止中の残り時間
 let endAt = null;           // 動いているときの終了時刻。null なら止まっている
 let rafId = null;
 let done = false;           // 「終わった」を押したら true
 
 const timerElement = document.getElementById('timer');
+const taskTitleElement = document.getElementById('taskTitle');
 const endTimeElement = document.getElementById('endTime');
 const ring = document.getElementById('ring');
 const ringBar = document.getElementById('ringBar');
@@ -20,7 +23,12 @@ ringBar.style.strokeDasharray = CIRC;
 
 // 今の残り時間（動いているときは終了時刻から計算）
 function currentRemaining() {
-    return endAt === null ? remainingMs : Math.max(0, endAt - Date.now());
+    return endAt === null ? remainingMs : Math.min(totalMs, Math.max(0, endAt - Date.now()));
+}
+
+function currentElapsed() {
+    const elapsed = endAt === null ? totalMs - remainingMs : Date.now() - taskStartMs;
+    return Math.min(totalMs, Math.max(0, elapsed));
 }
 
 // 表示の更新
@@ -44,7 +52,7 @@ function updateDisplay() {
     timerElement.textContent = `${minutes}:${seconds}`;
 
     // 円グラフ：残り時間の割合だけ線を残す（毎フレーム計算するのでなめらか）
-    ringBar.style.strokeDashoffset = CIRC * (1 - ms / TOTAL_MS);
+    ringBar.style.strokeDashoffset = CIRC * (1 - currentElapsed() / totalMs);
 
     const paused = endAt === null;
     ring.classList.toggle('is-paused', paused);
@@ -77,7 +85,7 @@ function tick() {
 // タイマーの開始・再開
 function startTimer() {
     if (done || endAt !== null || remainingMs <= 0) return; // 完了後・動作中・0秒のときは何もしない
-    endAt = Date.now() + remainingMs;
+    endAt = taskEndMs;
     tick();
 }
 
@@ -103,7 +111,7 @@ function finishTimer() {
 function completeTask() {
     cancelAnimationFrame(rafId);
     endAt = null;
-    remainingMs = TOTAL_MS;
+    remainingMs = totalMs;
     done = true;
     updateDisplay();
 }
@@ -129,6 +137,22 @@ confirmEndBtn.addEventListener('click', () => {
     completeTask();
 });
 
-// 読み込み完了と同時にスタート
-updateDisplay();
-startTimer();
+// URLのUUIDからIndexedDBのタスクを取得して表示する
+const timerParam = new URLSearchParams(window.location.search).get('task');
+
+getTask(timerParam).then((task) => {
+    if (!task) {
+        taskTitleElement.textContent = 'タスクが見つかりません';
+        updateDisplay();
+        return;
+    }
+    taskTitleElement.textContent = task.name;
+    taskStartMs = task.start * 1000;
+    taskEndMs = task.end * 1000;
+    totalMs = Math.max(0, taskEndMs - taskStartMs);
+    remainingMs = Math.min(totalMs, Math.max(0, taskEndMs - Date.now()));
+    updateDisplay();
+    startTimer();
+}).catch(() => {
+    taskTitleElement.textContent = 'タスクを読み込めません';
+});

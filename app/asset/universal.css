@@ -1,0 +1,25 @@
+/* アプリ全体で共有するリセットと基本UI */
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+
+body {
+    min-height: 100dvh;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.app-header {
+    display: flex;
+    align-items: center;
+}

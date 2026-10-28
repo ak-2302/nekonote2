@@ -5,7 +5,30 @@
             "name": "テストユーザー1",
             "username": "test-user-1",
             "password_hash": "scrypt:32768:8:1$frsuTZQ90qreMJHL$15af915dad80fd744980595a00c712b1fea29bbf7a0bdd41dd6daf3bb98420fc6d7e7f0c9c7ca11d764c9a7e61dcb86db8dd43474e7602423de8fffa31cd468c",
-            "tasks": []
+            "tasks": [
+                {
+                    "id": "f1096da5-503b-427a-a5d3-63aa25b87101",
+                    "name": "タスク",
+                    "description": "",
+                    "start": 1793160900,
+                    "end": 1793162100,
+                    "done": false
+                },
+                {
+                    "task_id": "demo-task-002",
+                    "title": "チームの議事録を整理する",
+                    "description": "前回のミーティング内容を共有用にまとめる",
+                    "due_date": "2026-10-31",
+                    "status": "in_progress"
+                },
+                {
+                    "task_id": "demo-task-003",
+                    "title": "タイマー画面を確認する",
+                    "description": "タスクからタイマーへ遷移できることを確認する",
+                    "due_date": null,
+                    "status": "done"
+                }
+            ]
         },
         {
             "user_id": 2,
