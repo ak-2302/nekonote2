@@ -19,16 +19,9 @@
     }
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-}
-
 body {
-    min-height: 100dvh;
     background: var(--bg);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
     display: flex;
     flex-direction: column;
     padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
@@ -132,9 +125,7 @@ body {
     border-radius: 14px;
     font-size: 17px;
     font-weight: 600;
-    font-family: inherit;
     cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
 }
 
 .btn:active {
