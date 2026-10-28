@@ -85,12 +85,16 @@ function renderTasks() {
         const li = document.createElement('li');
         li.className = 'task-item';
         const dateLabel = formatDate(task.date);
+        const timerQuery = new URLSearchParams({ task: task.name });
         li.innerHTML = `
             <span class="task-time">${task.time}</span>
             <span class="task-info">
                 <span class="task-name"></span>
                 <span class="task-date">${dateLabel}</span>
             </span>
+            <a class="start-timer-button" href="../timer/?${timerQuery}">
+                タイマーを開始
+            </a>
         `;
         li.querySelector('.task-name').textContent = task.name;
         task_list.appendChild(li);
