@@ -15,18 +15,36 @@
                     "done": false
                 },
                 {
-                    "task_id": "demo-task-002",
-                    "title": "チームの議事録を整理する",
+                    "id": "demo-task-002",
+                    "name": "チームの議事録を整理する",
                     "description": "前回のミーティング内容を共有用にまとめる",
-                    "due_date": "2026-10-31",
-                    "status": "in_progress"
+                    "start": 1793419200,
+                    "end": 1793422800,
+                    "done": false
                 },
                 {
-                    "task_id": "demo-task-003",
-                    "title": "タイマー画面を確認する",
+                    "id": "demo-task-003",
+                    "name": "タイマー画面を確認する",
                     "description": "タスクからタイマーへ遷移できることを確認する",
-                    "due_date": null,
-                    "status": "done"
+                    "start": 1793516400,
+                    "end": 1793520000,
+                    "done": true
+                },
+                {
+                    "id": "dev-post-check",
+                    "name": "API POST確認",
+                    "description": "開発用",
+                    "start": 1793600000,
+                    "end": 1793603600,
+                    "done": false
+                },
+                {
+                    "id": "317a47c9-ca17-46bb-967c-d94831e7bcd6",
+                    "name": "フロントから追加",
+                    "description": "",
+                    "start": 1793667600,
+                    "end": 1793669100,
+                    "done": false
                 }
             ]
         },

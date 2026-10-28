@@ -1,0 +1,11 @@
+[    2505ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://127.0.0.1:4173/favicon.ico:0
+[  121890ms] [ERROR] Access to fetch at 'https://nekonote.xn--n8jl2g.xn--q9jyb4c/api/dev/tasks' from origin 'http://127.0.0.1:4173' has been blocked by CORS policy: Request header field content-type is not allowed by Access-Control-Allow-Headers in preflight response. @ http://127.0.0.1:4173/register/:0
+[  121891ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://nekonote.xn--n8jl2g.xn--q9jyb4c/api/dev/tasks:0
+[  121898ms] TypeError: Failed to fetch
+    at saveTask (http://127.0.0.1:4173/asset/api.js:15:28)
+    at HTMLButtonElement.<anonymous> (http://127.0.0.1:4173/register/asset/script.js:56:11)
+[  126328ms] [ERROR] Access to fetch at 'https://nekonote.xn--n8jl2g.xn--q9jyb4c/api/dev/tasks' from origin 'http://127.0.0.1:4173' has been blocked by CORS policy: Request header field content-type is not allowed by Access-Control-Allow-Headers in preflight response. @ http://127.0.0.1:4173/register/:0
+[  126328ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://nekonote.xn--n8jl2g.xn--q9jyb4c/api/dev/tasks:0
+[  126339ms] TypeError: Failed to fetch
+    at saveTask (http://127.0.0.1:4173/asset/api.js:15:28)
+    at HTMLButtonElement.<anonymous> (http://127.0.0.1:4173/register/asset/script.js:56:11)

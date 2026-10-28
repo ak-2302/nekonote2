@@ -54,7 +54,6 @@ add_btn.addEventListener('click', async () => {
         done: false
     };
     await saveTask(task);
-    console.log('[task-added]', JSON.stringify(task, null, 2));
     tasks = await getTasks();
     renderTasks();
     task_time.value = '';

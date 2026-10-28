@@ -2,7 +2,7 @@ import json
 import os
 import secrets
 import uuid
-from datetime import date
+from datetime import date, datetime
 from functools import wraps
 
 from flask import Flask, jsonify, request
@@ -255,6 +255,24 @@ class Server:
             tasks = [task for task in tasks if task["status"] == status]
         return jsonify({"tasks": tasks, "total": len(tasks)})
 
+    @staticmethod
+    def development_task(task):
+        if "start" in task and "end" in task:
+            start = task["start"]
+            end = task["end"]
+        else:
+            due_date = task.get("due_date")
+            start = int(datetime.fromisoformat(f"{due_date}T09:00:00").timestamp()) if due_date else 0
+            end = start + 3600
+        return {
+            "id": str(task.get("id", task.get("task_id"))),
+            "name": task.get("name", task.get("title", "")),
+            "description": task.get("description", ""),
+            "start": start,
+            "end": end,
+            "done": task.get("done", task.get("status") == "done"),
+        }
+
     def owned_user(self, user_id):
         user = self.store.find_user(user_id)
         if user is None:
@@ -269,6 +287,14 @@ class Server:
             return self.error("NOT_FOUND", "指定されたURLが見つかりません", 404)
 
     def register_routes(self):
+        @self.app.after_request
+        def development_cors(response):
+            if request.path.startswith("/api/dev/"):
+                response.headers["Access-Control-Allow-Origin"] = "*"
+                response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+                response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+            return response
+
         @self.app.get("/api/ping")
         def ping():
             return jsonify({"message": "pong"})
@@ -277,6 +303,46 @@ class Server:
         def fetch_users():
             users = [self.public_user(user) for user in self.store.users]
             return jsonify({"users": users, "total": len(users)})
+
+        @self.app.get("/api/dev/tasks")
+        def development_tasks():
+            tasks = [
+                self.development_task(task)
+                for user in self.store.users
+                for task in user.get("tasks", [])
+            ]
+            return jsonify({"tasks": tasks, "total": len(tasks)})
+
+        @self.app.post("/api/dev/tasks")
+        def add_development_task():
+            data = request.get_json(silent=True)
+            if not isinstance(data, dict):
+                return self.error("VALIDATION_ERROR", "入力値が不正です", 400)
+            required = {"name", "start", "end", "done"}
+            if not required.issubset(data):
+                return self.error(
+                    "VALIDATION_ERROR",
+                    "name、start、end、doneは必須です",
+                    400,
+                )
+            if not isinstance(data["name"], str) or not data["name"].strip():
+                return self.error("VALIDATION_ERROR", "nameは必須です", 400)
+            if not all(isinstance(data[key], (int, float)) for key in ("start", "end")):
+                return self.error("VALIDATION_ERROR", "startとendは数値で指定してください", 400)
+            if not isinstance(data["done"], bool) or data["end"] <= data["start"]:
+                return self.error("VALIDATION_ERROR", "タスクの時間または完了状態が不正です", 400)
+            task = {
+                "id": str(data.get("id", uuid.uuid4())),
+                "name": data["name"].strip(),
+                "description": data.get("description", ""),
+                "start": int(data["start"]),
+                "end": int(data["end"]),
+                "done": data["done"],
+            }
+            user = self.store.users[0]
+            user.setdefault("tasks", []).append(task)
+            self.store.save()
+            return jsonify({"task": task}), 201
 
         @self.app.post("/api/users")
         def add_user():
