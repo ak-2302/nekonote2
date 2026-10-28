@@ -35,6 +35,14 @@ const FALLBACK_DEMO_DATA = {
             start: 1793160188,
             end: 1793160368,
             done: false
+        },
+        {
+            id: '550e8400-e29b-41d4-a716-446655440005',
+            name: 'レビュータスク',
+            description: '実装内容をレビューする',
+            start: 1793168100,
+            end: 1793169000,
+            done: false
         }
     ]
 };
