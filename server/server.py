@@ -117,10 +117,8 @@ class Validator:
             return {"username": "usernameは空でない文字列で指定してください"}
         if not partial and not isinstance(data.get("password"), str):
             return {"password": "passwordは必須です"}
-        if "password" in data and (
-            not isinstance(data["password"], str) or len(data["password"]) < 8
-        ):
-            return {"password": "passwordは8文字以上で指定してください"}
+        if "password" in data and not isinstance(data["password"], str):
+            return {"password": "passwordは文字列で指定してください"}
         return None
 
     @staticmethod
