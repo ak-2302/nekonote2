@@ -1,0 +1,63 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - heading "トリカカリ" [level=1] [ref=e4]
+    - generic [ref=e6]: 
+  - main [ref=e7]:
+    - generic [ref=e8]: 3件
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - generic [ref=e20]: NEXT UP
+        - generic [ref=e21]:
+          - generic [aria-hidden] [ref=e22]: 
+          - text: 直近の予定
+      - paragraph [ref=e23]: 13:00
+      - heading "チームの議事録を整理する" [level=2] [ref=e24]
+      - paragraph [ref=e25]: 10/31(土)
+    - list [ref=e10]:
+      - listitem [ref=e26]:
+        - generic [ref=e27]: 13:00
+        - generic [ref=e28]:
+          - generic [ref=e29]: チームの議事録を整理する
+          - generic [ref=e30]: 10/31(土)
+          - generic [ref=e31]: 所要時間：1時間
+        - link "タイマーを開始" [ref=e32] [cursor=pointer]:
+          - /url: ../timer/index.html?task=demo-task-002
+      - listitem [ref=e33]:
+        - generic [ref=e34]: 16:00
+        - generic [ref=e35]:
+          - generic [ref=e36]: タイマー画面を確認する
+          - generic [ref=e37]: 11/1(日)
+          - generic [ref=e38]: 所要時間：1時間
+        - link "タイマーを開始" [ref=e39] [cursor=pointer]:
+          - /url: ../timer/index.html?task=demo-task-003
+      - listitem [ref=e40]:
+        - generic [ref=e41]: 15:13
+        - generic [ref=e42]:
+          - generic [ref=e43]: API POST確認
+          - generic [ref=e44]: 11/2(月)
+          - generic [ref=e45]: 所要時間：1時間
+        - link "タイマーを開始" [ref=e46] [cursor=pointer]:
+          - /url: ../timer/index.html?task=dev-post-check
+  - button "タスクを追加" [ref=e15] [cursor=pointer]:
+    - generic [aria-hidden] [ref=e16]: +
+  - dialog [ref=e48]:
+    - generic [ref=e49]:
+      - heading "タスクを追加" [level=2] [ref=e51]
+      - button "閉じる" [ref=e52] [cursor=pointer]:
+        - generic [aria-hidden] [ref=e53]: 
+    - generic [ref=e54]:
+      - generic [ref=e55]: タスク名
+      - textbox "タスク名" [active] [ref=e56]:
+        - /placeholder: 例：資料を確認する
+    - generic [ref=e57]:
+      - generic [ref=e58]:
+        - generic [ref=e59]: 日付
+        - textbox "日付" [ref=e60]
+      - generic [ref=e61]:
+        - generic [ref=e62]: 時間
+        - textbox "時間" [ref=e63]
+    - generic [ref=e64]:
+      - generic [ref=e65]: 所要時間（分）
+      - spinbutton "所要時間（分）" [ref=e66]
+    - button "登録する" [ref=e67] [cursor=pointer]
+  - text: 

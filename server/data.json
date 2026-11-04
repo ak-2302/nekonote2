@@ -15,18 +15,36 @@
                     "done": false
                 },
                 {
-                    "task_id": "demo-task-002",
-                    "title": "チームの議事録を整理する",
+                    "id": "demo-task-002",
+                    "name": "チームの議事録を整理する",
                     "description": "前回のミーティング内容を共有用にまとめる",
-                    "due_date": "2026-10-31",
-                    "status": "in_progress"
+                    "start": 1793419200,
+                    "end": 1793422800,
+                    "done": false
                 },
                 {
-                    "task_id": "demo-task-003",
-                    "title": "タイマー画面を確認する",
+                    "id": "demo-task-003",
+                    "name": "タイマー画面を確認する",
                     "description": "タスクからタイマーへ遷移できることを確認する",
-                    "due_date": null,
-                    "status": "done"
+                    "start": 1793516400,
+                    "end": 1793520000,
+                    "done": true
+                },
+                {
+                    "id": "dev-post-check",
+                    "name": "API POST確認",
+                    "description": "開発用",
+                    "start": 1793600000,
+                    "end": 1793603600,
+                    "done": false
+                },
+                {
+                    "id": "317a47c9-ca17-46bb-967c-d94831e7bcd6",
+                    "name": "フロントから追加",
+                    "description": "",
+                    "start": 1793667600,
+                    "end": 1793669100,
+                    "done": false
                 }
             ]
         },
@@ -42,6 +60,36 @@
             "name": "テストユーザー3",
             "username": "test-user-3",
             "password_hash": "scrypt:32768:8:1$q9v1v5in3odlvadI$8814b98c9217bd40ae236ad2fea62fe79821e7b430b04f577f1fc4fa1b237b280279fff5effcbec3468e3d78ba726fa8192514d721869ef8dfd41c1af89d53fc",
+            "tasks": []
+        },
+        {
+            "user_id": "a306ab81-2a1c-469c-9f49-df33e4c2cdeb",
+            "name": "hoge",
+            "username": "hoge",
+            "password_hash": "scrypt:32768:8:1$Br8UqdzvbtAaUNGU$1c1bfd580e1461e02b2d37f4106fd4c14100918df465bb18b0b2007f222c3a3bbff7ade163907772e33b0cbf726d717206ba9be09493e8fd948cd6e4f6349a7e",
+            "tasks": [
+                {
+                    "id": "b8d18c09-f2f9-415b-b0bc-5f4ca2769fef",
+                    "name": "test",
+                    "description": "",
+                    "start": 1793201580,
+                    "end": 1793203380,
+                    "done": false
+                }
+            ]
+        },
+        {
+            "user_id": "f3355034-bf5a-4555-bebc-2a330f345a8c",
+            "name": "hoo",
+            "username": "hoo",
+            "password_hash": "scrypt:32768:8:1$0rDx2DrvqaiqADMo$1ff30546ed6d67772f2c5649b5aebcc19935962dfcbbfefeeb546afdf04c6d101d2e2d27bc2aed227a77b73fd9a10007c40643dd2acec0fddc86da6135cf8471",
+            "tasks": []
+        },
+        {
+            "user_id": "ef1a8003-be29-445d-aac2-f74841bb032e",
+            "name": "happy",
+            "username": "happy",
+            "password_hash": "scrypt:32768:8:1$kAazzD5YSOLRQ0am$1ac7934cca4078b0008556a365730ec6173b2ac27a10549ff819374bcae94d6d6c714d47cc2748a4508fa548d82d3a85fb058eee461fc7518ffd099760ba3ac0",
             "tasks": []
         }
     ]
