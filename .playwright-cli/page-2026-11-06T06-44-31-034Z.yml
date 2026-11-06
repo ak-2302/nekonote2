@@ -1,0 +1,11 @@
+- generic [active] [ref=f9e1]:
+  - banner [ref=f9e2]: トリカカリ
+  - main [ref=f9e3]:
+    - heading "オフラインのためタスクを読み込めません" [level=1] [ref=f9e4]
+    - timer [ref=f9e5]:
+      - generic [ref=f9e9]:
+        - generic [ref=f9e10]: 01:00
+        - generic [ref=f9e11]: 接続が必要です
+    - generic [ref=f9e12]:
+      - button "一時停止" [disabled] [ref=f9e13]
+      - button "終了" [disabled] [ref=f9e14]

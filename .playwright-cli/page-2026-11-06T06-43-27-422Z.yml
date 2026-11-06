@@ -1,0 +1,42 @@
+- generic [ref=f7e1]:
+  - banner [ref=f7e2]:
+    - heading "トリカカリ" [level=1] [ref=f7e4]
+    - generic [ref=f7e6]: 
+    - button "ログアウト" [ref=f7e7] [cursor=pointer]
+  - main [ref=f7e8]:
+    - generic [ref=f7e9]: 接続が必要です
+    - text: 
+    - list [ref=f7e11]:
+      - listitem [ref=f7e12]:
+        - paragraph [ref=f7e13]: 接続が必要です
+        - generic [ref=f7e14]: オンラインで再試行してください
+  - button "タスクを追加" [ref=f7e15] [cursor=pointer]:
+    - generic [aria-hidden] [ref=f7e16]: +
+  - dialog [ref=f7e19]:
+    - generic [ref=f7e20]:
+      - heading "タスクを追加" [level=2] [ref=f7e22]
+      - button "閉じる" [ref=f7e23] [cursor=pointer]:
+        - generic [aria-hidden] [ref=f7e24]: 
+    - generic [ref=f7e25]:
+      - generic [ref=f7e26]: タスク名
+      - textbox "タスク名" [ref=f7e27]:
+        - /placeholder: 例：資料を確認する
+        - text: オフライン登録確認
+    - generic [ref=f7e28]:
+      - generic [ref=f7e29]: 説明
+      - textbox "説明" [ref=f7e30]:
+        - /placeholder: 例：第3章を読み、気づいた点をメモする
+    - generic [ref=f7e31]:
+      - generic [ref=f7e32]:
+        - generic [ref=f7e33]: 日付
+        - textbox "日付" [ref=f7e34]: 2026-11-07
+      - generic [ref=f7e35]:
+        - generic [ref=f7e36]: 時間
+        - textbox "時間" [ref=f7e37]: 12:00
+    - generic [ref=f7e38]:
+      - generic [ref=f7e39]: 所要時間（分）
+      - spinbutton "所要時間（分）" [ref=f7e40]: "30"
+    - button "登録する" [active] [ref=f7e41] [cursor=pointer]
+  - status [ref=f7e42]:
+    - generic [aria-hidden] [ref=f7e43]: 
+    - generic [ref=f7e44]: 接続が必要です。オンラインで再試行してください。
