@@ -137,7 +137,7 @@ confirmEndBtn.addEventListener('click', () => {
     completeTask();
 });
 
-// URLのUUIDからIndexedDBのタスクを取得して表示する
+// URLのUUIDからサーバーの公開タスク情報を取得して表示する
 const timerParam = new URLSearchParams(window.location.search).get('task');
 
 getTask(timerParam).then((task) => {
@@ -153,6 +153,11 @@ getTask(timerParam).then((task) => {
     remainingMs = Math.min(totalMs, Math.max(0, taskEndMs - Date.now()));
     updateDisplay();
     startTimer();
-}).catch(() => {
-    taskTitleElement.textContent = 'タスクを読み込めません';
+}).catch((error) => {
+    taskTitleElement.textContent = error.message.includes('接続が必要です')
+        ? 'オフラインのためタスクを読み込めません'
+        : 'タスクを読み込めません';
+    endTimeElement.textContent = '接続が必要です';
+    pauseBtn.disabled = true;
+    endBtn.disabled = true;
 });

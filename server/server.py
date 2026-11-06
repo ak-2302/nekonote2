@@ -203,7 +203,7 @@ class Server:
             (
                 task
                 for task in user["tasks"]
-                if str(task["task_id"]) == task_id
+                if str(task.get("id", task.get("task_id"))) == task_id
             ),
             None,
         )
@@ -310,6 +310,14 @@ class Server:
                 for task in user.get("tasks", [])
             ]
             return jsonify({"tasks": tasks, "total": len(tasks)})
+
+        @self.app.get("/api/dev/tasks/<task_id>")
+        def development_task_by_id(task_id):
+            for user in self.store.users:
+                task = self.find_task(user, task_id)
+                if task is not None:
+                    return jsonify({"task": self.development_task(task)})
+            return self.error("TASK_NOT_FOUND", "タスクが見つかりません", 404)
 
         @self.app.post("/api/dev/tasks")
         def add_development_task():
