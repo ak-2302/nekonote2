@@ -18,6 +18,9 @@ class JsonStore:
         with open(self.path, "r", encoding="utf-8") as data_file:
             return json.load(data_file)
 
+    def reload(self):
+        self.data = self._load()
+
     def save(self):
         with open(self.path, "w", encoding="utf-8") as data_file:
             json.dump(self.data, data_file, ensure_ascii=False, indent=4)
@@ -281,6 +284,11 @@ class Server:
             return self.error("NOT_FOUND", "指定されたURLが見つかりません", 404)
 
     def register_routes(self):
+        @self.app.before_request
+        def refresh_json_store():
+            if request.path.startswith("/api/"):
+                self.store.reload()
+
         @self.app.after_request
         def development_cors(response):
             if (
