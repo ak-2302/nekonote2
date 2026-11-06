@@ -154,10 +154,10 @@ getTask(timerParam).then((task) => {
     updateDisplay();
     startTimer();
 }).catch((error) => {
-    taskTitleElement.textContent = error.message.includes('接続が必要です')
+    taskTitleElement.textContent = error.kind === 'offline'
         ? 'オフラインのためタスクを読み込めません'
         : 'タスクを読み込めません';
-    endTimeElement.textContent = '接続が必要です';
+    endTimeElement.textContent = error.message;
     pauseBtn.disabled = true;
     endBtn.disabled = true;
 });

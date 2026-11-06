@@ -1,20 +1,22 @@
 const API_BASE_URL = 'https://nekonote.xn--n8jl2g.xn--q9jyb4c/api';
 const TASK_API_URL = `${API_BASE_URL}/app/tasks`;
 const CONNECTION_REQUIRED_MESSAGE = '接続が必要です。オンラインで再試行してください。';
+const SERVER_UNREACHABLE_MESSAGE = 'サーバーに接続できません。しばらくしてから再試行してください。';
 
-function apiError(message, status) {
+function apiError(message, status, kind) {
     const error = new Error(message);
     error.status = status;
+    error.kind = kind;
     return error;
 }
 
 async function fetchFromNetwork(url, options = {}) {
-    if (!navigator.onLine) throw apiError(CONNECTION_REQUIRED_MESSAGE);
+    if (!navigator.onLine) throw apiError(CONNECTION_REQUIRED_MESSAGE, undefined, 'offline');
 
     try {
         return await fetch(url, { ...options, cache: 'no-store' });
     } catch {
-        throw apiError(CONNECTION_REQUIRED_MESSAGE);
+        throw apiError(SERVER_UNREACHABLE_MESSAGE, undefined, 'network');
     }
 }
 

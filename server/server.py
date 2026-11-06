@@ -283,11 +283,7 @@ class Server:
     def register_routes(self):
         @self.app.after_request
         def development_cors(response):
-            if (
-                request.path.startswith("/api/dev/")
-                or request.path.startswith("/api/app/")
-                or request.path in {"/api/login", "/api/users"}
-            ):
+            if request.path.startswith("/api/"):
                 response.headers["Access-Control-Allow-Origin"] = "*"
                 response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
                 response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type"

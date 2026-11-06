@@ -46,15 +46,17 @@ async function showLoggedIn() {
     renderTasks();
 }
 
-function showConnectionRequired() {
+function showTaskLoadError(message) {
     tasks = [];
     clearTimeout(expiry_timer);
     next_task.hidden = true;
     task_list.innerHTML = '';
-    empty_state.innerHTML = '<p>接続が必要です</p><span>オンラインで再試行してください</span>';
+    empty_state.innerHTML = '<p></p><span></span>';
+    empty_state.querySelector('p').textContent = message;
+    empty_state.querySelector('span').textContent = '状態を確認してから再試行してください';
     empty_state.hidden = false;
     task_list.appendChild(empty_state);
-    task_count.textContent = '接続が必要です';
+    task_count.textContent = 'タスクを取得できません';
 }
 
 open_login_btn.addEventListener('click', () => {
@@ -230,7 +232,7 @@ if (localStorage.getItem('access_token')) {
             showLoggedOut();
             return;
         }
-        showConnectionRequired();
+        showTaskLoadError(error.message);
     });
 } else {
     showLoggedOut();

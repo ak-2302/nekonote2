@@ -1,4 +1,4 @@
-const CACHE_NAME = 'torikakari-shell-v3';
+const CACHE_NAME = 'torikakari-shell-v4';
 const APP_SHELL = [
     './',
     './register/',
