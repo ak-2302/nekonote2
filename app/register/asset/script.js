@@ -20,6 +20,7 @@ const close_login_btn = document.getElementById('close_login');
 const login_backdrop = document.getElementById('login_backdrop');
 const login_form = document.getElementById('login_form');
 const login_error = document.getElementById('login_error');
+const empty_state_content = empty_state.innerHTML;
 let toast_timer;
 let expiry_timer;
 let tasks = [];
@@ -38,11 +39,24 @@ function showLoggedOut() {
 }
 
 async function showLoggedIn() {
-    tasks = await getTasks();
     document.getElementById('auth_prompt').hidden = true;
     open_register_btn.hidden = false;
     open_login_btn.textContent = 'ログアウト';
+    tasks = await getTasks();
     renderTasks();
+}
+
+function showTaskLoadError(message) {
+    tasks = [];
+    clearTimeout(expiry_timer);
+    next_task.hidden = true;
+    task_list.innerHTML = '';
+    empty_state.innerHTML = '<p></p><span></span>';
+    empty_state.querySelector('p').textContent = message;
+    empty_state.querySelector('span').textContent = '状態を確認してから再試行してください';
+    empty_state.hidden = false;
+    task_list.appendChild(empty_state);
+    task_count.textContent = 'タスクを取得できません';
 }
 
 open_login_btn.addEventListener('click', () => {
@@ -140,6 +154,7 @@ function renderTasks() {
     const activeTasks = tasks.filter(task => task.end * 1000 > now);
     clearTimeout(expiry_timer);
     task_list.innerHTML = '';
+    empty_state.innerHTML = empty_state_content;
     empty_state.hidden = activeTasks.length > 0;
     task_count.textContent = `${activeTasks.length}件`;
     if (!activeTasks.length) {
@@ -211,9 +226,13 @@ function showToast(message) {
 }
 
 if (localStorage.getItem('access_token')) {
-    showLoggedIn().catch(() => {
-        localStorage.removeItem('access_token');
-        showLoggedOut();
+    showLoggedIn().catch((error) => {
+        if (error.status === 401) {
+            localStorage.removeItem('access_token');
+            showLoggedOut();
+            return;
+        }
+        showTaskLoadError(error.message);
     });
 } else {
     showLoggedOut();
