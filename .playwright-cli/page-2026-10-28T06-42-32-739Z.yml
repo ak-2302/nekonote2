@@ -1,0 +1,15 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - heading "トリカカリ" [level=1] [ref=e4]
+    - generic [ref=e6]: 
+  - main [ref=e7]:
+    - generic [ref=e8]: 0件
+    - text: 
+    - list [ref=e10]:
+      - listitem [ref=e11]:
+        - generic [aria-hidden] [ref=e12]: 
+        - paragraph [ref=e13]: まだタスクがありません
+        - generic [ref=e14]: 右下のボタンから追加できます
+  - button "タスクを追加" [ref=e15] [cursor=pointer]:
+    - generic [aria-hidden] [ref=e16]: +
+  - text:  
