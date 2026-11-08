@@ -1,3 +1,5 @@
+import { pauseTimerAudio, playTimerAudio, stopTimerAudio } from './module/audio.js';
+
 let totalMs = 60 * 1000;    // タスクのend - start（ミリ秒）
 let taskStartMs = Date.now();
 let taskEndMs = taskStartMs + totalMs;
@@ -88,6 +90,7 @@ function tick() {
 function startTimer() {
     if (done || endAt !== null || remainingMs <= 0) return; // 完了後・動作中・0秒のときは何もしない
     endAt = taskEndMs;
+    void playTimerAudio();
     tick();
 }
 
@@ -97,6 +100,7 @@ function pauseTimer() {
     remainingMs = currentRemaining();
     endAt = null;
     cancelAnimationFrame(rafId);
+    pauseTimerAudio();
     updateDisplay();
 }
 
@@ -105,6 +109,7 @@ function finishTimer() {
     cancelAnimationFrame(rafId);
     endAt = null;
     remainingMs = 0;
+    stopTimerAudio();
     updateDisplay();
     setTimeout(() => alert('時間です！'), 50); // 00:00 を表示してから知らせる
 }
@@ -115,6 +120,7 @@ function completeTask() {
     endAt = null;
     remainingMs = totalMs;
     done = true;
+    stopTimerAudio();
     updateDisplay();
 }
 
