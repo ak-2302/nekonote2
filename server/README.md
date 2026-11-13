@@ -9,7 +9,9 @@ pip install -r ../requirements.txt
 python server.py
 ```
 
-デフォルトでは`http://localhost:8001`で起動します。画面も同じサーバーから配信するので、`http://localhost:8001/app/register/index.html`を開いてください。
+デフォルトでは`http://localhost:8001`で起動します。画面も同じサーバーから配信するので、`http://localhost:8001`を開くとホーム画面（`/app/register/index.html`）に移動します。
+
+画面のファイルは、`server.py`の`PUBLIC_FILES`に書かれたものだけを`/app/`以下で配信し、それ以外は404にします。画面用のファイルを追加したときは、`PUBLIC_FILES`と`app/service-worker.js`の`APP_SHELL`の両方に追加してください。`/`、`/app/`、`/app/register/`、`/app/timer/`は、それぞれの`index.html`へ移動します（クエリ文字列は引き継ぎます）。
 
 初回起動時にWeb Push用の秘密鍵`vapid_private.pem`が自動で作られます。gitには含めません。削除すると鍵が作り直され、各端末で通知を有効にし直す必要があります（ログイン時に自動で登録し直します）。
 
@@ -25,7 +27,7 @@ python server.py
 cloudflared tunnel --url http://localhost:8001
 ```
 
-表示された`https://xxxx.trycloudflare.com`に`/app/register/index.html`を付けて、スマホで開きます。
+表示された`https://xxxx.trycloudflare.com`をそのままスマホで開きます（ホーム画面に移動します）。
 
 1. ブラウザの共有メニューから「ホーム画面に追加」する（iPhoneはiOS 16.4以降で、ホーム画面から開いたときだけ通知を使える）
 2. ホーム画面のアイコンから開いてログインし、「通知を有効にする」を押して許可する

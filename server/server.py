@@ -9,13 +9,46 @@ from datetime import date, datetime
 from functools import wraps
 
 from cryptography.hazmat.primitives import serialization
-from flask import Flask, jsonify, redirect, request
+from flask import Flask, jsonify, redirect, request, send_from_directory
 from py_vapid import Vapid
 from pywebpush import WebPushException, webpush
 from werkzeug.security import check_password_hash, generate_password_hash
 
 # 通知タイミングとして選べる「開始の何分前か」
 NOTIFY_BEFORE_OPTIONS = {0, 5}
+
+# /app/ 以下で配信してよいファイルの一覧（app/ からの相対パス）。ここにないファイルは404にする。
+# 画面用のファイルを追加したら、ここと service-worker.js の APP_SHELL の両方に追加すること。
+PUBLIC_FILES = {
+    "manifest.webmanifest",
+    "service-worker.js",
+    "icons/icon-192.png",
+    "icons/icon-512.png",
+    "asset/api.js",
+    "asset/pwa.js",
+    "asset/universal.css",
+    "register/index.html",
+    "register/asset/script.js",
+    "register/asset/style.css",
+    "register/asset/time-wheel.js",
+    "timer/index.html",
+    "timer/asset/main.js",
+    "timer/asset/style.css",
+}
+
+# 拡張子から種類を推測できないファイルの Content-Type
+PUBLIC_FILE_MIMETYPES = {
+    "manifest.webmanifest": "application/manifest+json",
+}
+
+# フォルダのURLで開かれたときの移動先（クエリ文字列は引き継ぐ）
+DIRECTORY_REDIRECTS = {
+    "/": "/app/register/index.html",
+    "/app": "/app/register/index.html",
+    "/app/": "/app/register/index.html",
+    "/app/register/": "/app/register/index.html",
+    "/app/timer/": "/app/timer/index.html",
+}
 
 
 class JsonStore:
@@ -317,12 +350,10 @@ class Server:
         self.host = host
         self.port = port
         server_dir = os.path.dirname(os.path.abspath(__file__))
-        # 画面もAPIと同じオリジンから配信する（PWAにはHTTPSの同一オリジン配信が必要）
-        self.app = Flask(
-            __name__,
-            static_folder=os.path.join(server_dir, "..", "app"),
-            static_url_path="/app",
-        )
+        # 画面もAPIと同じオリジンから配信する（PWAにはHTTPSの同一オリジン配信が必要）。
+        # フォルダごとの自動配信はせず、PUBLIC_FILES にあるファイルだけを serve_app_file で返す
+        self.app_dir = os.path.abspath(os.path.join(server_dir, "..", "app"))
+        self.app = Flask(__name__, static_folder=None)
         data_path = os.path.join(server_dir, "data.json")
         self.store = JsonStore(data_path)
         self.auth = AuthService(self.store)
@@ -333,10 +364,6 @@ class Server:
         )
         self.register_routes()
         self.register_error_handlers()
-
-    @app.route("/")
-    def index():
-        return redirect("/app/register/index.html")
 
     @staticmethod
     def public_user(user):
@@ -461,9 +488,30 @@ class Server:
                 response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type"
             return response
 
-        @self.app.route("/")
-        def index():
-            return redirect("/app/register/index.html")
+        # トンネルのURLやフォルダのURLを開いたときに、画面のファイルへ移動させる
+        def redirect_directory():
+            target = DIRECTORY_REDIRECTS[request.path]
+            query = request.query_string.decode("utf-8")
+            return redirect(f"{target}?{query}" if query else target)
+
+        for path in DIRECTORY_REDIRECTS:
+            self.app.add_url_rule(
+                path,
+                endpoint=f"redirect_directory:{path}",
+                view_func=redirect_directory,
+                strict_slashes=False if path == "/" else True,
+            )
+
+        @self.app.get("/app/<path:filename>")
+        def serve_app_file(filename):
+            if filename not in PUBLIC_FILES:
+                return self.error("NOT_FOUND", "指定されたURLが見つかりません", 404)
+            return send_from_directory(
+                self.app_dir,
+                filename,
+                mimetype=PUBLIC_FILE_MIMETYPES.get(filename),
+                max_age=0,
+            )
 
         @self.app.get("/api/ping")
         def ping():
