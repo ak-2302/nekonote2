@@ -75,6 +75,29 @@ body {
     margin-bottom: 20px;
 }
 
+.push-prompt {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0 0 20px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+
+.push-prompt[hidden] {
+    display: none;
+}
+
+.push-prompt p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
 .auth-prompt {
     margin: 0 0 20px;
     color: var(--muted);
@@ -391,7 +414,8 @@ body {
     font-weight: 600;
 }
 
-.form-field input {
+.form-field input,
+.form-field select {
     width: 100%;
     min-height: 48px;
     padding: 0 13px;

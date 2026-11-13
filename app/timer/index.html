@@ -20,7 +20,9 @@
 </head>
 
 <body>
-    <header class="app-header" href="../register/index.html">トリカカリ</header>
+    <header class="app-header">
+        <a class="app-header-link" href="../register/index.html">トリカカリ</a>
+    </header>
 
     <main class="running">
         <!-- タスク名 -->
@@ -42,7 +44,10 @@
         <div class="actions">
             <button type="button" class="btn btn-pause" id="pauseBtn">一時停止</button>
             <button type="button" class="btn btn-end" id="endBtn">終了</button>
+            <!-- 時間切れ・完了後に表示する -->
+            <a class="btn btn-home" id="homeBtn" href="../register/index.html" hidden>ホームに戻る</a>
         </div>
+        <p class="save-error" id="saveError" role="alert" hidden></p>
     </main>
 
     <!-- 終了の確認ポップアップ -->

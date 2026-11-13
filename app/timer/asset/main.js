@@ -13,6 +13,8 @@ const ring = document.getElementById('ring');
 const ringBar = document.getElementById('ringBar');
 const pauseBtn = document.getElementById('pauseBtn');
 const endBtn = document.getElementById('endBtn');
+const homeBtn = document.getElementById('homeBtn');
+const saveErrorElement = document.getElementById('saveError');
 const confirmDialog = document.getElementById('confirmDialog');
 const cancelEndBtn = document.getElementById('cancelEndBtn');
 const confirmEndBtn = document.getElementById('confirmEndBtn');
@@ -40,8 +42,10 @@ function updateDisplay() {
         ring.classList.add('is-done');
         timerElement.textContent = 'お疲れ様です';
         endTimeElement.textContent = '';
-        pauseBtn.disabled = true;
-        endBtn.disabled = true;
+        // 完了後は「ホームに戻る」だけを表示する
+        pauseBtn.hidden = true;
+        endBtn.hidden = true;
+        homeBtn.hidden = false;
         return;
     }
 
@@ -57,12 +61,20 @@ function updateDisplay() {
     const paused = endAt === null;
     ring.classList.toggle('is-paused', paused);
 
+    // 時間切れなら「一時停止」の代わりに「ホームに戻る」を出す（「終了」は残す）
+    pauseBtn.hidden = ms <= 0;
+    homeBtn.hidden = ms > 0;
+
     if (ms <= 0) {
         endTimeElement.textContent = '時間です';
-        pauseBtn.disabled = true;
     } else if (paused) {
         endTimeElement.textContent = '一時停止中';
         pauseBtn.textContent = '再開';
+        pauseBtn.disabled = false;
+    } else if (Date.now() < taskStartMs) {
+        const start = new Date(taskStartMs);
+        endTimeElement.textContent = `${start.getHours()}:${String(start.getMinutes()).padStart(2, '0')}に開始`;
+        pauseBtn.textContent = '一時停止';
         pauseBtn.disabled = false;
     } else {
         const end = new Date(endAt);
@@ -131,13 +143,35 @@ endBtn.addEventListener('click', () => confirmDialog.showModal());
 // 「まだ」→ 閉じるだけ
 cancelEndBtn.addEventListener('click', () => confirmDialog.close());
 
-// 「終わった」→ 閉じて完了表示
-confirmEndBtn.addEventListener('click', () => {
-    confirmDialog.close();
-    completeTask();
+// 未ログインならログイン画面へ送り、ログイン後にこのタスクへ戻す
+function redirectToLogin() {
+    localStorage.removeItem('access_token');
+    const query = timerParam ? `?${new URLSearchParams({ task: timerParam })}` : '';
+    location.replace(`../register/index.html${query}`);
+}
+
+// 「終わった」→ サーバーに完了を保存してから完了表示。失敗したらタイマーは動かしたまま
+confirmEndBtn.addEventListener('click', async () => {
+    confirmEndBtn.disabled = true;
+    saveErrorElement.hidden = true;
+    try {
+        await updateTaskDone(timerParam, true);
+        confirmDialog.close();
+        completeTask();
+    } catch (error) {
+        confirmDialog.close();
+        if (error.status === 401) {
+            redirectToLogin();
+            return;
+        }
+        saveErrorElement.textContent = `完了を保存できませんでした（${error.message}）。「終了」からもう一度お試しください`;
+        saveErrorElement.hidden = false;
+    } finally {
+        confirmEndBtn.disabled = false;
+    }
 });
 
-// URLのUUIDからサーバーの公開タスク情報を取得して表示する
+// URLのUUIDからログイン中のユーザーのタスクを取得して表示する
 const timerParam = new URLSearchParams(window.location.search).get('task');
 
 getTask(timerParam).then((task) => {
@@ -151,9 +185,18 @@ getTask(timerParam).then((task) => {
     taskEndMs = task.end * 1000;
     totalMs = Math.max(0, taskEndMs - taskStartMs);
     remainingMs = Math.min(totalMs, Math.max(0, taskEndMs - Date.now()));
+    // 完了済みのタスクはタイマーを動かさず、完了表示にする
+    if (task.done) {
+        completeTask();
+        return;
+    }
     updateDisplay();
     startTimer();
 }).catch((error) => {
+    if (error.status === 401) {
+        redirectToLogin();
+        return;
+    }
     taskTitleElement.textContent = error.kind === 'offline'
         ? 'オフラインのためタスクを読み込めません'
         : 'タスクを読み込めません';

@@ -1,26 +1,38 @@
+import base64
 import json
 import os
 import secrets
+import threading
+import time
 import uuid
 from datetime import date, datetime
 from functools import wraps
 
+from cryptography.hazmat.primitives import serialization
 from flask import Flask, jsonify, request
+from py_vapid import Vapid
+from pywebpush import WebPushException, webpush
 from werkzeug.security import check_password_hash, generate_password_hash
+
+# 通知タイミングとして選べる「開始の何分前か」
+NOTIFY_BEFORE_OPTIONS = {0, 5}
 
 
 class JsonStore:
     def __init__(self, path):
         self.path = path
         self.data = self._load()
+        # 通知スレッドとリクエスト処理が同時に書き込まないようにする
+        self.lock = threading.RLock()
 
     def _load(self):
         with open(self.path, "r", encoding="utf-8") as data_file:
             return json.load(data_file)
 
     def save(self):
-        with open(self.path, "w", encoding="utf-8") as data_file:
-            json.dump(self.data, data_file, ensure_ascii=False, indent=4)
+        with self.lock:
+            with open(self.path, "w", encoding="utf-8") as data_file:
+                json.dump(self.data, data_file, ensure_ascii=False, indent=4)
 
     @property
     def users(self):
@@ -94,7 +106,143 @@ class AuthService:
         return self.store.find_user(user_id) if user_id is not None else None
 
 
+class PushService:
+    """Web Push の鍵管理と、開始時刻が近いタスクの通知送信を受け持つ。"""
+
+    CHECK_INTERVAL_SECONDS = 30
+
+    def __init__(self, store, key_path, subject):
+        self.store = store
+        self.key_path = key_path
+        self.subject = subject
+        self.vapid = self._load_or_create_keys()
+
+    def _load_or_create_keys(self):
+        if os.path.exists(self.key_path):
+            return Vapid.from_file(self.key_path)
+        vapid = Vapid()
+        vapid.generate_keys()
+        vapid.save_key(self.key_path)
+        return vapid
+
+    @property
+    def public_key(self):
+        raw = self.vapid.public_key.public_bytes(
+            serialization.Encoding.X962,
+            serialization.PublicFormat.UncompressedPoint,
+        )
+        return base64.urlsafe_b64encode(raw).rstrip(b"=").decode("ascii")
+
+    def subscribe(self, user, subscription):
+        endpoint = subscription["endpoint"]
+        with self.store.lock:
+            # 同じ端末で別ユーザーがログインした場合に備え、他ユーザーから外す
+            for other in self.store.users:
+                other["push_subscriptions"] = [
+                    sub
+                    for sub in other.get("push_subscriptions", [])
+                    if sub["endpoint"] != endpoint
+                ]
+            user.setdefault("push_subscriptions", []).append(subscription)
+            self.store.save()
+
+    def unsubscribe(self, user, endpoint):
+        with self.store.lock:
+            user["push_subscriptions"] = [
+                sub
+                for sub in user.get("push_subscriptions", [])
+                if sub["endpoint"] != endpoint
+            ]
+            self.store.save()
+
+    def send(self, subscription, payload):
+        """送信できたらTrue、購読が無効になっていたらFalse、一時的な失敗はNoneを返す。"""
+        try:
+            webpush(
+                subscription_info=subscription,
+                data=json.dumps(payload, ensure_ascii=False),
+                vapid_private_key=self.vapid,
+                vapid_claims={"sub": self.subject},
+                ttl=600,
+                timeout=10,
+            )
+            return True
+        except WebPushException as error:
+            status = getattr(error.response, "status_code", None)
+            if status in (404, 410):
+                return False
+            print(f"通知の送信に失敗しました: {error}")
+            return None
+        except Exception as error:  # 通信エラーなどは次回の確認で再送する
+            print(f"通知の送信に失敗しました: {error}")
+            return None
+
+    def due_tasks(self, now):
+        for user in self.store.users:
+            if not user.get("push_subscriptions"):
+                continue
+            for task in user.get("tasks", []):
+                if "start" not in task or "end" not in task:
+                    continue
+                if task.get("done") or task.get("notified"):
+                    continue
+                notify_at = task["start"] - task.get("notify_before", 0) * 60
+                if notify_at <= now < task["end"]:
+                    yield user, task
+
+    def notify_due_tasks(self):
+        now = time.time()
+        with self.store.lock:
+            targets = list(self.due_tasks(now))
+            changed = False
+            for user, task in targets:
+                minutes = task.get("notify_before", 0)
+                body = f"{minutes}分後に開始します" if minutes and now < task["start"] else "開始時刻です"
+                if task.get("description"):
+                    body += f"\n{task['description']}"
+                payload = {"task_id": task["id"], "title": task["name"], "body": body}
+                results = [
+                    (subscription, self.send(subscription, payload))
+                    for subscription in user["push_subscriptions"]
+                ]
+                # 無効になった購読は消す
+                user["push_subscriptions"] = [
+                    subscription for subscription, result in results if result is not False
+                ]
+                # 1件も届かず一時的な失敗が残っている場合は、次回もう一度送る
+                outcomes = [result for _, result in results]
+                if True in outcomes or None not in outcomes:
+                    task["notified"] = True
+                changed = True
+            if changed:
+                self.store.save()
+
+    def start(self):
+        def loop():
+            while True:
+                try:
+                    self.notify_due_tasks()
+                except Exception as error:  # スレッドが止まらないようにする
+                    print(f"通知処理でエラーが発生しました: {error}")
+                time.sleep(self.CHECK_INTERVAL_SECONDS)
+
+        threading.Thread(target=loop, daemon=True).start()
+
+
 class Validator:
+    @staticmethod
+    def push_subscription(data):
+        if not isinstance(data, dict):
+            return {"body": "リクエストボディはJSONオブジェクトで指定してください"}
+        if not isinstance(data.get("endpoint"), str) or not data["endpoint"].startswith("https://"):
+            return {"endpoint": "endpointはhttpsのURLで指定してください"}
+        keys = data.get("keys")
+        if not isinstance(keys, dict) or not all(
+            isinstance(keys.get(name), str) for name in ("p256dh", "auth")
+        ):
+            return {"keys": "keysにはp256dhとauthが必要です"}
+        return None
+
     @staticmethod
     def user(data, partial=False):
         if not isinstance(data, dict):
@@ -165,10 +313,21 @@ class Server:
     def __init__(self, host="localhost", port=8001):
         self.host = host
         self.port = port
-        self.app = Flask(__name__)
-        data_path = os.path.join(os.path.dirname(__file__), "data.json")
+        server_dir = os.path.dirname(os.path.abspath(__file__))
+        # 画面もAPIと同じオリジンから配信する（PWAにはHTTPSの同一オリジン配信が必要）
+        self.app = Flask(
+            __name__,
+            static_folder=os.path.join(server_dir, "..", "app"),
+            static_url_path="/app",
+        )
+        data_path = os.path.join(server_dir, "data.json")
         self.store = JsonStore(data_path)
         self.auth = AuthService(self.store)
+        self.push = PushService(
+            self.store,
+            os.path.join(server_dir, "vapid_private.pem"),
+            os.environ.get("VAPID_SUBJECT", "mailto:nekonote@example.com"),
+        )
         self.register_routes()
         self.register_error_handlers()
 
@@ -265,6 +424,7 @@ class Server:
             "start": start,
             "end": end,
             "done": task.get("done", task.get("status") == "done"),
+            "notify_before": task.get("notify_before", 0),
         }
 
     def owned_user(self, user_id):
@@ -285,7 +445,7 @@ class Server:
         def development_cors(response):
             if request.path.startswith("/api/"):
                 response.headers["Access-Control-Allow-Origin"] = "*"
-                response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+                response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, OPTIONS"
                 response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type"
             return response
 
@@ -298,59 +458,35 @@ class Server:
             users = [self.public_user(user) for user in self.store.users]
             return jsonify({"users": users, "total": len(users)})
 
-        @self.app.get("/api/dev/tasks")
-        def development_tasks():
-            tasks = [
-                self.development_task(task)
-                for user in self.store.users
-                for task in user.get("tasks", [])
-            ]
-            return jsonify({"tasks": tasks, "total": len(tasks)})
-
-        @self.app.get("/api/dev/tasks/<task_id>")
-        def development_task_by_id(task_id):
-            for user in self.store.users:
-                task = self.find_task(user, task_id)
-                if task is not None:
-                    return jsonify({"task": self.development_task(task)})
-            return self.error("TASK_NOT_FOUND", "タスクが見つかりません", 404)
-
-        @self.app.post("/api/dev/tasks")
-        def add_development_task():
-            data = request.get_json(silent=True)
-            if not isinstance(data, dict):
-                return self.error("VALIDATION_ERROR", "入力値が不正です", 400)
-            required = {"name", "start", "end", "done"}
-            if not required.issubset(data):
-                return self.error(
-                    "VALIDATION_ERROR",
-                    "name、start、end、doneは必須です",
-                    400,
-                )
-            if not isinstance(data["name"], str) or not data["name"].strip():
-                return self.error("VALIDATION_ERROR", "nameは必須です", 400)
-            if not all(isinstance(data[key], (int, float)) for key in ("start", "end")):
-                return self.error("VALIDATION_ERROR", "startとendは数値で指定してください", 400)
-            if not isinstance(data["done"], bool) or data["end"] <= data["start"]:
-                return self.error("VALIDATION_ERROR", "タスクの時間または完了状態が不正です", 400)
-            task = {
-                "id": str(data.get("id", uuid.uuid4())),
-                "name": data["name"].strip(),
-                "description": data.get("description", ""),
-                "start": int(data["start"]),
-                "end": int(data["end"]),
-                "done": data["done"],
-            }
-            user = self.store.users[0]
-            user.setdefault("tasks", []).append(task)
-            self.store.save()
-            return jsonify({"task": task}), 201
-
         @self.app.get("/api/app/tasks")
         @self.authenticated
         def fetch_application_tasks():
             tasks = [self.development_task(task) for task in request.current_user["tasks"]]
             return jsonify({"tasks": tasks, "total": len(tasks)})
+
+        @self.app.get("/api/app/tasks/<task_id>")
+        @self.authenticated
+        def fetch_application_task(task_id):
+            task = self.find_task(request.current_user, task_id)
+            if task is None:
+                return self.error("TASK_NOT_FOUND", "タスクが見つかりません", 404)
+            return jsonify({"task": self.development_task(task)})
+
+        @self.app.patch("/api/app/tasks/<task_id>")
+        @self.authenticated
+        def update_application_task(task_id):
+            task = self.find_task(request.current_user, task_id)
+            if task is None:
+                return self.error("TASK_NOT_FOUND", "タスクが見つかりません", 404)
+            data = request.get_json(silent=True)
+            if not isinstance(data, dict) or set(data) != {"done"}:
+                return self.error("VALIDATION_ERROR", "doneだけを指定してください", 400)
+            if not isinstance(data["done"], bool):
+                return self.error("VALIDATION_ERROR", "doneは真偽値で指定してください", 400)
+            with self.store.lock:
+                task["done"] = data["done"]
+                self.store.save()
+            return jsonify({"task": self.development_task(task)})
 
         @self.app.post("/api/app/tasks")
         @self.authenticated
@@ -367,6 +503,9 @@ class Server:
                 return self.error("VALIDATION_ERROR", "startとendは数値で指定してください", 400)
             if not isinstance(data["done"], bool) or data["end"] <= data["start"]:
                 return self.error("VALIDATION_ERROR", "タスクの時間または完了状態が不正です", 400)
+            notify_before = data.get("notify_before", 0)
+            if isinstance(notify_before, bool) or notify_before not in NOTIFY_BEFORE_OPTIONS:
+                return self.error("VALIDATION_ERROR", "notify_beforeは0または5で指定してください", 400)
             task = {
                 "id": str(uuid.uuid4()),
                 "name": data["name"].strip(),
@@ -374,10 +513,35 @@ class Server:
                 "start": int(data["start"]),
                 "end": int(data["end"]),
                 "done": data["done"],
+                "notify_before": notify_before,
             }
             request.current_user["tasks"].append(task)
             self.store.save()
             return jsonify({"task": task}), 201
+
+        @self.app.get("/api/push/public-key")
+        def push_public_key():
+            return jsonify({"public_key": self.push.public_key})
+
+        @self.app.post("/api/push/subscribe")
+        @self.authenticated
+        def push_subscribe():
+            data = request.get_json(silent=True)
+            details = Validator.push_subscription(data)
+            if details:
+                return self.error("VALIDATION_ERROR", "入力値が不正です", 400, details)
+            subscription = {"endpoint": data["endpoint"], "keys": data["keys"]}
+            self.push.subscribe(request.current_user, subscription)
+            return "", 204
+
+        @self.app.post("/api/push/unsubscribe")
+        @self.authenticated
+        def push_unsubscribe():
+            data = request.get_json(silent=True)
+            if not isinstance(data, dict) or not isinstance(data.get("endpoint"), str):
+                return self.error("VALIDATION_ERROR", "endpointは必須です", 400)
+            self.push.unsubscribe(request.current_user, data["endpoint"])
+            return "", 204
 
         @self.app.post("/api/users")
         def add_user():
@@ -555,6 +719,7 @@ class Server:
             return error or self.delete_task_from_user(user, task_id)
 
     def run(self):
+        self.push.start()
         self.app.run(host=self.host, port=self.port)
 
 

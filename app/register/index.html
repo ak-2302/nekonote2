@@ -29,6 +29,12 @@
 
     <main class="page-content">
         <p class="auth-prompt" id="auth_prompt">ログインすると自分のタスクを確認・追加できます。</p>
+        <section class="push-prompt" id="push_prompt" hidden>
+            <p id="push_prompt_text">タスクの開始時刻に通知を受け取れます。</p>
+            <button class="login-button" id="enable_push" type="button">
+                <i class="fa-solid fa-bell" aria-hidden="true"></i> 通知を有効にする
+            </button>
+        </section>
         <section class="intro">
             <span class="task-count" id="task_count">0件</span>
         </section>
@@ -91,6 +97,13 @@
             <div class="form-field">
                 <label for="task_duration">所要時間（分）</label>
                 <input type="number" id="task_duration" min="1" step="1" inputmode="numeric" placeholder="例：30">
+            </div>
+            <div class="form-field">
+                <label for="task_notify_before">通知</label>
+                <select id="task_notify_before">
+                    <option value="0">開始時刻に通知</option>
+                    <option value="5">開始5分前に通知</option>
+                </select>
             </div>
             <button id="add-btn" type="button">登録する</button>
         </div>
