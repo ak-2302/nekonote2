@@ -453,6 +453,40 @@ body {
     text-align: left;
 }
 
+/* 通知のオプション（開始時刻の通知は常に送り、5分前の通知だけ選べる） */
+.notify-default {
+    color: var(--text);
+    font-size: 15px;
+}
+
+.form-field .checkbox-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 13px;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 400;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    cursor: pointer;
+}
+
+.form-field .checkbox-field input[type="checkbox"] {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    /* 入力欄用のスタイル（.form-field input）を打ち消す */
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    accent-color: var(--accent-dark);
+}
+
 /* 時刻ダイヤル（time-wheel.js）。行の高さは WHEEL_ITEM_HEIGHT と合わせる */
 .time-wheel {
     position: relative;

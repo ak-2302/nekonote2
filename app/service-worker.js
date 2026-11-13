@@ -1,4 +1,4 @@
-const CACHE_NAME = 'torikakari-shell-v14';
+const CACHE_NAME = 'torikakari-shell-v15';
 // 1件でも取得に失敗するとインストール全体が失敗するので、実在するファイルだけを並べる
 const APP_SHELL = [
     './register/index.html',
@@ -77,7 +77,9 @@ self.addEventListener('push', (event) => {
             body: payload.body || '',
             icon: new URL('./icons/icon-192.png', self.registration.scope).href,
             badge: new URL('./icons/icon-192.png', self.registration.scope).href,
+            // 同じタスクの5分前の通知は開始時刻の通知で置き換え、置き換えたときも改めて知らせる
             tag: payload.task_id ? `task-${payload.task_id}` : undefined,
+            renotify: Boolean(payload.task_id),
             data: { task_id: payload.task_id }
         })
     );

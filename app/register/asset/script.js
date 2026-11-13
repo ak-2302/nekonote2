@@ -224,7 +224,7 @@ add_btn.addEventListener('click', async () => {
         start,
         end: start + durationMinutes * 60,
         done: false,
-        notify_before: Number(task_notify_before.value)
+        notify_before: task_notify_before.checked ? 5 : 0
     };
     try {
         await saveTask(task);
@@ -237,7 +237,7 @@ add_btn.addEventListener('click', async () => {
     task_duration.value = '';
     task_name.value = '';
     task_description.value = '';
-    task_notify_before.value = '0';
+    task_notify_before.checked = false;
     document.getElementById('task_date').value = '';
     modal_backdrop.hidden = true;
 });
