@@ -109,7 +109,7 @@ class AuthService:
 class PushService:
     """Web Push の鍵管理と、開始時刻が近いタスクの通知送信を受け持つ。"""
 
-    CHECK_INTERVAL_SECONDS = 30
+    CHECK_INTERVAL_SECONDS = 1
 
     def __init__(self, store, key_path, subject):
         self.store = store

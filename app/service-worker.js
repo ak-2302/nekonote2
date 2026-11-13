@@ -1,4 +1,4 @@
-const CACHE_NAME = 'torikakari-shell-v9';
+const CACHE_NAME = 'torikakari-shell-v10';
 // 1件でも取得に失敗するとインストール全体が失敗するので、実在するファイルだけを並べる
 const APP_SHELL = [
     './register/index.html',

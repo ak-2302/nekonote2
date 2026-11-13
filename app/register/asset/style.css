@@ -400,6 +400,8 @@ body {
 
 .form-row .form-field {
     flex: 1;
+    /* 横並びの中で欄が縮めるようにする（iOSの日付欄は最小幅を持つため、はみ出す） */
+    min-width: 0;
 }
 
 .form-field {
@@ -416,14 +418,44 @@ body {
 
 .form-field input,
 .form-field select {
+    display: block;
     width: 100%;
-    min-height: 48px;
+    min-width: 0;
+    height: 48px;
     padding: 0 13px;
     color: var(--text);
+    /* 16px未満だとiOSが入力時に画面を拡大してしまう */
+    font: inherit;
+    font-size: 16px;
     background: var(--bg);
     border: 1px solid var(--line);
     border-radius: 11px;
     outline: none;
+}
+
+/* iOS独自の見た目をやめて、他の入力欄とそろえる */
+.form-field input[type="date"],
+.form-field input[type="time"] {
+    -webkit-appearance: none;
+    appearance: none;
+    line-height: 46px;
+    text-align: left;
+}
+
+.form-field input[type="date"]::-webkit-date-and-time-value,
+.form-field input[type="time"]::-webkit-date-and-time-value {
+    margin: 0;
+    text-align: left;
+}
+
+/* 選択欄も独自の見た目をやめ、矢印を自前で表示する */
+.form-field select {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238b8e91' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
 }
 
 .form-field textarea {
@@ -443,7 +475,8 @@ body {
     box-shadow: 0 0 0 3px rgba(98, 198, 160, .18);
 }
 
-.form-field input:focus {
+.form-field input:focus,
+.form-field select:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(98, 198, 160, .18);
 }
