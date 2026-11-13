@@ -99,11 +99,12 @@
                 <input type="number" id="task_duration" min="1" step="1" inputmode="numeric" placeholder="例：30">
             </div>
             <div class="form-field">
-                <label for="task_notify_before">通知</label>
-                <select id="task_notify_before">
-                    <option value="0">開始時刻に通知</option>
-                    <option value="5">開始5分前に通知</option>
-                </select>
+                <span class="field-label">通知</span>
+                <p class="notify-default">開始時刻に通知します</p>
+                <label class="checkbox-field" for="task_notify_before">
+                    <input type="checkbox" id="task_notify_before">
+                    <span>開始5分前にも通知する</span>
+                </label>
             </div>
             <div class="form-field">
                 <label for="task_description">説明（任意）</label>

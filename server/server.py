@@ -53,22 +53,37 @@ DIRECTORY_REDIRECTS = {
 
 class JsonStore:
     def __init__(self, path):
-        self.path = path
-        self.data = self._load()
-        # 通知スレッドとリクエスト処理が同時に書き込まないようにする
+        # 通知スレッドとリクエスト処理が同時に読み書きしないようにする
         self.lock = threading.RLock()
+        self.path = path
+        self.loaded_mtime = None
+        self.data = self._load()
+
+    def _mtime(self):
+        return os.stat(self.path).st_mtime_ns
 
     def _load(self):
         with open(self.path, "r", encoding="utf-8") as data_file:
-            return json.load(data_file)
+            data = json.load(data_file)
+        self.loaded_mtime = self._mtime()
+        return data
 
     def reload(self):
-        self.data = self._load()
+        """ファイルが外から書き換えられていたときだけ読み直す。
+
+        毎回読み直すと、他の処理が持っているユーザーやタスクのデータが古いものに置き換わり、
+        その処理の変更（通知済みの印など）が失われて、同じ通知が二重に送られる原因になる。
+        """
+        with self.lock:
+            if self._mtime() != self.loaded_mtime:
+                self.data = self._load()
 
     def save(self):
         with self.lock:
             with open(self.path, "w", encoding="utf-8") as data_file:
                 json.dump(self.data, data_file, ensure_ascii=False, indent=4)
+            # 自分で書いた内容は読み直す必要がない
+            self.loaded_mtime = self._mtime()
 
     @property
     def users(self):
@@ -213,45 +228,87 @@ class PushService:
             print(f"通知の送信に失敗しました: {error}")
             return None
 
-    def due_tasks(self, now):
+    # 通知の種類ごとの「通知済み」の印
+    NOTIFIED_FLAGS = {"before": "notified_before", "start": "notified"}
+
+    def due_notifications(self, now):
+        """今送るべき通知を (user, task, kind) で返す。kind は "before"（n分前）か "start"（開始時刻）。"""
         for user in self.store.users:
             if not user.get("push_subscriptions"):
                 continue
             for task in user.get("tasks", []):
-                if "start" not in task or "end" not in task:
+                if "start" not in task or "end" not in task or task.get("done"):
                     continue
-                if task.get("done") or task.get("notified"):
-                    continue
-                notify_at = task["start"] - task.get("notify_before", 0) * 60
-                if notify_at <= now < task["end"]:
-                    yield user, task
+                before = task.get("notify_before", 0)
+                # n分前の通知は、開始時刻より前の間だけ送る（過ぎていたら開始時刻の通知だけにする）
+                if (
+                    before
+                    and not task.get("notified_before")
+                    and task["start"] - before * 60 <= now < task["start"]
+                ):
+                    yield user, task, "before"
+                elif not task.get("notified") and task["start"] <= now < task["end"]:
+                    yield user, task, "start"
+
+    @staticmethod
+    def payload_for(task, kind):
+        if kind == "before":
+            body = f"{task['notify_before']}分後に「{task['name']}」の予定があります"
+        else:
+            minutes = max(1, round((task["end"] - task["start"]) / 60))
+            body = f"{minutes}分のタイマーが始まっています！"
+        return {"task_id": task["id"], "title": task["name"], "body": body}
 
     def notify_due_tasks(self):
         now = time.time()
+        # 1) 送る通知を決め、送る前に通知済みの印を付けて保存する。
+        #    送信には時間がかかるので、その間に次の確認が走っても二重に送らないようにするため
         with self.store.lock:
-            targets = list(self.due_tasks(now))
-            changed = False
-            for user, task in targets:
-                minutes = task.get("notify_before", 0)
-                body = f"{minutes}分後に開始します" if minutes and now < task["start"] else "開始時刻です"
-                if task.get("description"):
-                    body += f"\n{task['description']}"
-                payload = {"task_id": task["id"], "title": task["name"], "body": body}
-                results = [
-                    (subscription, self.send(subscription, payload))
-                    for subscription in user["push_subscriptions"]
-                ]
+            jobs = []
+            for user, task, kind in self.due_notifications(now):
+                task[self.NOTIFIED_FLAGS[kind]] = True
+                jobs.append({
+                    "user_id": user["user_id"],
+                    "task_id": task["id"],
+                    "kind": kind,
+                    "subscriptions": list(user["push_subscriptions"]),
+                    "payload": self.payload_for(task, kind),
+                })
+            if not jobs:
+                return
+            self.store.save()
+
+        # 2) 送信はロックの外で行い、その間もAPIのリクエストを止めない
+        for job in jobs:
+            job["results"] = [
+                (subscription, self.send(subscription, job["payload"]))
+                for subscription in job["subscriptions"]
+            ]
+
+        # 3) 結果を反映する。送信中にデータが読み直された可能性があるので、IDで探し直す
+        with self.store.lock:
+            for job in jobs:
+                user = self.store.find_user(job["user_id"])
+                if user is None:
+                    continue
                 # 無効になった購読は消す
-                user["push_subscriptions"] = [
-                    subscription for subscription, result in results if result is not False
-                ]
-                # 1件も届かず一時的な失敗が残っている場合は、次回もう一度送る
-                outcomes = [result for _, result in results]
-                if True in outcomes or None not in outcomes:
-                    task["notified"] = True
-                changed = True
-            if changed:
-                self.store.save()
+                dead = {sub["endpoint"] for sub, result in job["results"] if result is False}
+                if dead:
+                    user["push_subscriptions"] = [
+                        sub
+                        for sub in user.get("push_subscriptions", [])
+                        if sub["endpoint"] not in dead
+                    ]
+                # 1件も届かず一時的な失敗が残っている場合は、印を外して次回もう一度送る
+                outcomes = [result for _, result in job["results"]]
+                if True not in outcomes and None in outcomes:
+                    task = next(
+                        (t for t in user.get("tasks", []) if str(t.get("id")) == job["task_id"]),
+                        None,
+                    )
+                    if task is not None:
+                        task.pop(self.NOTIFIED_FLAGS[job["kind"]], None)
+            self.store.save()
 
     def start(self):
         def loop():
