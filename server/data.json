@@ -46,21 +46,24 @@
                     "end": 1793669100,
                     "done": false
                 }
-            ]
+            ],
+            "push_subscriptions": []
         },
         {
             "user_id": 2,
             "name": "テストユーザー2",
             "username": "test-user-2",
             "password_hash": "scrypt:32768:8:1$y6CmYprEx3ZjIi7c$6111e89022066edba1b06a1a71443c3dab7aea1e42635700a10280234641d16dbe407a318bd3f4b238621006f76f1b69d51523e78ab1d5666b184ffd09217919",
-            "tasks": []
+            "tasks": [],
+            "push_subscriptions": []
         },
         {
             "user_id": 3,
             "name": "テストユーザー3",
             "username": "test-user-3",
             "password_hash": "scrypt:32768:8:1$q9v1v5in3odlvadI$8814b98c9217bd40ae236ad2fea62fe79821e7b430b04f577f1fc4fa1b237b280279fff5effcbec3468e3d78ba726fa8192514d721869ef8dfd41c1af89d53fc",
-            "tasks": []
+            "tasks": [],
+            "push_subscriptions": []
         },
         {
             "user_id": "a306ab81-2a1c-469c-9f49-df33e4c2cdeb",
@@ -76,28 +79,32 @@
                     "end": 1793203380,
                     "done": false
                 }
-            ]
+            ],
+            "push_subscriptions": []
         },
         {
             "user_id": "f3355034-bf5a-4555-bebc-2a330f345a8c",
             "name": "hoo",
             "username": "hoo",
             "password_hash": "scrypt:32768:8:1$0rDx2DrvqaiqADMo$1ff30546ed6d67772f2c5649b5aebcc19935962dfcbbfefeeb546afdf04c6d101d2e2d27bc2aed227a77b73fd9a10007c40643dd2acec0fddc86da6135cf8471",
-            "tasks": []
+            "tasks": [],
+            "push_subscriptions": []
         },
         {
             "user_id": "ef1a8003-be29-445d-aac2-f74841bb032e",
             "name": "happy",
             "username": "happy",
             "password_hash": "scrypt:32768:8:1$kAazzD5YSOLRQ0am$1ac7934cca4078b0008556a365730ec6173b2ac27a10549ff819374bcae94d6d6c714d47cc2748a4508fa548d82d3a85fb058eee461fc7518ffd099760ba3ac0",
-            "tasks": []
+            "tasks": [],
+            "push_subscriptions": []
         },
         {
             "user_id": "8ad66511-0762-4111-8412-16a610abff57",
             "name": "mm",
             "username": "mm",
             "password_hash": "scrypt:32768:8:1$qBXkWgop8Mktw5LR$64946dbeeba633df7f85eaab1dd3588082d672690e8feab921ad3f3e9fc766dff63594a22e97c037900f47a1a1fba435d9b6ff252d9ac643715ac91a40cf5359",
-            "tasks": []
+            "tasks": [],
+            "push_subscriptions": []
         },
         {
             "user_id": "5d8dbdd5-5f2f-4a5e-8a7d-a62068fee0e1",
@@ -113,14 +120,16 @@
                     "end": 1793949600,
                     "done": false
                 }
-            ]
+            ],
+            "push_subscriptions": []
         },
         {
             "user_id": "37d4fc6c-0909-4e61-b4f2-790aa483854e",
             "name": "cchjq",
             "username": "cchjq",
             "password_hash": "scrypt:32768:8:1$22bWdhcgmnkkbinQ$d7321f4e5a4cfcbe49d68c8be1d4ee85bd2dc8bb9ecbc0149b70eba0051cc93058d0e2b682d5a5bc86a020417e1ca24845735324bc03b6f7e987cb0c07aa439c",
-            "tasks": []
+            "tasks": [],
+            "push_subscriptions": []
         },
         {
             "user_id": "093863e8-e4e1-4b63-98b6-0c4f2f61b7e1",
@@ -136,53 +145,40 @@
                     "end": 1793952540,
                     "done": false
                 }
-            ]
+            ],
+            "push_subscriptions": []
         },
         {
             "user_id": "166773ec-98de-4b1c-8283-94b7d428f817",
             "name": "a",
             "username": "a",
             "password_hash": "scrypt:32768:8:1$YjrK6C83SPvlJ4re$4298d979b51a23a42d003b0ae7d54787d123cb0213aadcb0e06d8a0a0dd3e229f18bc6c0a08d6cdc313fde0019c26a38fa1cc9537d571b970931a3712e9eec20",
-            "tasks": []
+            "tasks": [],
+            "push_subscriptions": []
         },
         {
             "user_id": "0e7391ff-92b4-4c17-82d3-b4578c0e449b",
             "name": "neko",
             "username": "neko",
             "password_hash": "scrypt:32768:8:1$YKLHhDRodyqIlwmR$364ea3383f717e2ca01864ac9b37f907346f789c160c67633777b29e6cbb0144cd156e50c78f4bd41653d6ea29b3992280f14f1c3b8ae3c50c33bdaf5d264cb8",
-            "tasks": []
+            "tasks": [],
+            "push_subscriptions": []
+        },
+        {
+            "user_id": "395083db-91b3-49ea-9ff6-a0460bb553e2",
+            "name": "鳩",
+            "username": "鳩",
+            "password_hash": "scrypt:32768:8:1$aPemAtPBO8kj7CAa$02e2ed8a45ec3a0f562a46c5532fafd01c7b2f86cb07c2b30f6bd2f0e53c01ec3430904b602c52ce55ad2b2ed3e10ece0222dcd7c3561e5b40cf068c2780b00f",
+            "tasks": [],
+            "push_subscriptions": []
         },
         {
             "user_id": "097f75c8-ec7e-4d64-b8b2-f36cec49d755",
             "name": "m",
             "username": "m",
             "password_hash": "scrypt:32768:8:1$arjGTikx1SjbCqYF$6d94fb5067cf7f3768860c7a3ce62e4cd9c99e30b3dcf7bd9264f48e7fa95a5502613fe7af01f408353ef06fd5b67496292a00f80881d9c174d26d867eee56bd",
-            "tasks": [
-                {
-                    "id": "128ff4cd-1528-444f-9a94-fe166ceded49",
-                    "name": "鳩",
-                    "description": "",
-                    "start": 1793950080,
-                    "end": 1793950140,
-                    "done": false
-                },
-                {
-                    "id": "3740afdb-fb5d-4690-a235-13384bf769f4",
-                    "name": "ハシビロコウ",
-                    "description": "",
-                    "start": 1793951880,
-                    "end": 1793951940,
-                    "done": false
-                },
-                {
-                    "id": "65309bba-d618-4a21-809d-6112ea10d058",
-                    "name": "ハシブトガラス",
-                    "description": "",
-                    "start": 1793952000,
-                    "end": 1793952060,
-                    "done": false
-                }
-            ]
+            "tasks": [],
+            "push_subscriptions": []
         },
         {
             "user_id": "21c597fb-f02b-4230-ae16-aa114300f786",
@@ -191,210 +187,161 @@
             "password_hash": "scrypt:32768:8:1$GpYuROfNAKb8fQRQ$74c51b990b396e90ccc830b825d86104edca741ab56d19acaa67cfd48c5cb2c7a86d5e9bf9842dcf382ba5cc94508c3d0e77f8b1a5fef3ceb5cd47e5fd172498",
             "tasks": [
                 {
-                    "id": "9bb483c3-fbc9-48de-98fd-486ac1a7060d",
-                    "name": "確認、レビュー準備",
-                    "description": "ああ",
-                    "start": 1793950500,
-                    "end": 1793952300,
+                    "id": "ed8b4269-459e-46e8-9542-1e2d8c943a67",
+                    "name": "家事",
+                    "description": "あ",
+                    "start": 1793952840,
+                    "end": 1793953440,
                     "done": false
+                }
+            ],
+            "push_subscriptions": []
+        },
+        {
+            "user_id": "35914046-e531-4d3c-9b37-370b27508c56",
+            "name": "おおとり",
+            "username": "おおとり",
+            "password_hash": "scrypt:32768:8:1$grOiPyCLnFtT7ZOE$927af79c59cb8e2cede20d999aa37fc6fba55a5da80eb68ca7db6e1452268fcab8599c4268b8603c53a3edd66b78e7440deb83f7e5da4251ec7e8b6c7e26522c",
+            "tasks": [
+                {
+                    "id": "83d2f299-439a-47ca-8402-4521a00e67de",
+                    "name": "出発",
+                    "description": "ｋｋ",
+                    "start": 1794544620,
+                    "end": 1794544920,
+                    "done": false,
+                    "notify_before": 0,
+                    "notified": true
                 },
                 {
-                    "id": "9df3eca4-b2ad-4095-b121-8d9393e6efb1",
-                    "name": "kakunin",
+                    "id": "15a40853-d9ba-44a1-aafe-ffa109db22f2",
+                    "name": "授業準備",
                     "description": "",
-                    "start": 1793950260,
-                    "end": 1793951460,
-                    "done": false
+                    "start": 1794550080,
+                    "end": 1794550380,
+                    "done": false,
+                    "notify_before": 0,
+                    "notified": true
                 },
                 {
-                    "id": "be6c7c08-326e-4c6c-9cf5-23af8e4607cf",
-                    "name": "kakuninnn",
+                    "id": "be16589b-856a-4333-b625-9a2c37ec78f1",
+                    "name": "準備の準備",
                     "description": "",
-                    "start": 1793950740,
-                    "end": 1793950860,
-                    "done": false
+                    "start": 1794550440,
+                    "end": 1794550740,
+                    "done": false,
+                    "notify_before": 5,
+                    "notified": true
                 },
                 {
-                    "id": "f86688d1-be5a-4c61-827e-e96b0e5e8a28",
-                    "name": "ふ",
-                    "description": "ふ",
-                    "start": 1793952120,
-                    "end": 1793953320,
-                    "done": false
-                }
-            ]
-        },
-        {
-            "user_id": "a5a0d091-0368-49b9-a36e-5a09ff0fe2ae",
-            "name": "鳩",
-            "username": "鳩",
-            "password_hash": "scrypt:32768:8:1$3tXE5JSzx3j2qQSN$612897a3a27bef6f2f071d39a8a8e833a4ae6162e74182c930e64170c6472618e29650c6d8ff8af4405ade84a03c457bcbc8d7b1f3792d5b8d34b4440fc0b9a4",
-            "tasks": [
-                {
-                    "id": "a9b1d2ca-1345-49cf-8684-e67d1ccd81c7",
-                    "name": "レビュー",
+                    "id": "3e54cebe-586f-4a69-83c1-3906deb42c8b",
+                    "name": "授業",
                     "description": "",
-                    "start": 1793952900,
-                    "end": 1793953800,
-                    "done": false
+                    "start": 1794550320,
+                    "end": 1794550440,
+                    "done": false,
+                    "notify_before": 0,
+                    "notified": true
                 },
                 {
-                    "id": "9cea9117-4b09-4f21-878c-81190a8abfda",
-                    "name": "PBLリファインメント",
+                    "id": "8b1d4602-a253-4327-9993-fef5e5421100",
+                    "name": "授業準備",
                     "description": "",
-                    "start": 1793953800,
-                    "end": 1793954400,
-                    "done": false
+                    "start": 1794550680,
+                    "end": 1794550800,
+                    "done": false,
+                    "notify_before": 5,
+                    "notified": true
                 },
                 {
-                    "id": "03d5a6f7-3064-459a-97af-f43330a29a0a",
-                    "name": "ふりかえり",
+                    "id": "7312507c-3e53-4f23-8dc9-aa10e1a8edba",
+                    "name": "く",
                     "description": "",
-                    "start": 1793954400,
-                    "end": 1793955000,
-                    "done": false
+                    "start": 1794551880,
+                    "end": 1794557280,
+                    "done": false,
+                    "notify_before": 0,
+                    "notified": true
                 },
                 {
-                    "id": "a1063da1-8a3e-4a43-99ec-8901a5e5ae45",
-                    "name": "ふりかえりツアー",
+                    "id": "cdad2a8e-dcc9-49c6-801a-f32058f9648f",
+                    "name": "く",
                     "description": "",
-                    "start": 1793955000,
-                    "end": 1793955600,
-                    "done": false
-                }
-            ]
-        },
-        {
-            "user_id": "4dc0af9c-f96c-482b-b939-4e592fa1a124",
-            "name": "ss",
-            "username": "ss",
-            "password_hash": "scrypt:32768:8:1$mJd4HQpzxtmrWPWL$9c5941690e2abc7c9e9fa9a2e8c7a66413849a1ba803dbb96176b7c6298c39f23ee750b7c62115b831efafe8805e79895cbad445b4dc9e74138613b02b57d578",
-            "tasks": []
-        },
-        {
-            "user_id": "48b86713-40da-429d-a38f-fb90a6a17b9a",
-            "name": "あか",
-            "username": "あか",
-            "password_hash": "scrypt:32768:8:1$Y5CTunJhZSmYE58T$617fbb6675f4717ba6d40f9f56463dc95f8d3efb57f53fa65668f70afb6ae5e0926906b0a075bf0dd9e4419f14099c4a85042b63f259a5d920689278d5b55ebc",
-            "tasks": [
-                {
-                    "id": "25714d1d-344a-4d94-8b27-c6e76a4a793c",
-                    "name": "あまだー",
-                    "description": "",
-                    "start": 1794302340,
-                    "end": 1794302400,
-                    "done": false
-                }
-            ]
-        },
-        {
-            "user_id": "3d3f8efe-4e4c-41c2-a1e5-ac540e7dd1e5",
-            "name": "お",
-            "username": "お",
-            "password_hash": "scrypt:32768:8:1$R2CPk7SKab8Vj8Kc$8696f1db9d09e075cf023f704f1f9d7fc0938ae5117fd58843c92edf516348e2c8dae2fa4b75a50cb4d05887fff57ffeda7fe9215b7aeab979ecce0e3560146c",
-            "tasks": []
-        },
-        {
-            "user_id": "3f72b42c-4876-481d-9f1f-b17756626c00",
-            "name": "n",
-            "username": "n",
-            "password_hash": "scrypt:32768:8:1$rPNiIVGPX3FlZMrn$f4f43f06c905852b9d8db388b1491c6751223f4d03e30cb855c65712702cc1eaf185ad2665ef4c5de967930035452fa1ffd7e54b687899da438f4cb4beceae70",
-            "tasks": [
-                {
-                    "id": "59ae2062-6cb2-473b-988b-6fe473a167d5",
-                    "name": "課題",
-                    "description": "",
-                    "start": 1793953260,
-                    "end": 1793955060,
-                    "done": false
-                }
-            ]
-        },
-        {
-            "user_id": "442d7920-c07a-4366-a88d-0435ac867b91",
-            "name": "ああああ",
-            "username": "ああああ",
-            "password_hash": "scrypt:32768:8:1$AsAzqRWaVgyJBnu7$557b7b6d1635ae3b52a12b0283c6621b63bcf43866a37f703589ecacfb4b9663fc453637db348970b20d8ab40dd9d676900a26d4261d5368f9e7ce96395dd5ff",
-            "tasks": [
-                {
-                    "id": "b2269702-7d1f-4dc9-97ad-c999bef08f60",
-                    "name": "12時に寝る",
-                    "description": "明日バイトだから",
-                    "start": 1794150000,
-                    "end": 1794150600,
-                    "done": false
-                }
-            ]
-        },
-        {
-            "user_id": "c446fabe-c8b6-48dc-b5d2-946e91ba97d9",
-            "name": "とりす",
-            "username": "とりす",
-            "password_hash": "scrypt:32768:8:1$OmLSql0DujyZ5qQT$4c0067f14556da54d0b67024636ca9b0f7919e663860f9f60d3925e8e7fec7cc90b13f82368f93e4fa149ab57f1d74b7eb9befabf2694bab555b80aec4f8c8a3",
-            "tasks": [
-                {
-                    "id": "8b3b54aa-e7ac-4706-92fe-9b156875cfa9",
-                    "name": "かじ",
-                    "description": "",
-                    "start": 1793953140,
-                    "end": 1793954340,
-                    "done": false
-                }
-            ]
-        },
-        {
-            "user_id": "f130fbb9-e523-44cf-ba50-5bcb7f61a49a",
-            "name": "ぽ",
-            "username": "ぽ",
-            "password_hash": "scrypt:32768:8:1$6VCDYUgR3om8Njaj$941a8e205bb1c3e15f8af8082add5ddab77bd72e6341251a78d9cedb61ceb4936bcd48ea1a2ab0ce48c1decbcf3cbcced81a6edc2c9152032273c83a909156be",
-            "tasks": [
-                {
-                    "id": "a37827a2-9ad3-4c69-9bc9-211fd65a617c",
-                    "name": "日付変わるまでに寝る",
-                    "description": "",
-                    "start": 1793976900,
-                    "end": 1793978100,
-                    "done": false
-                }
-            ]
-        },
-        {
-            "user_id": "849e6ab3-4a71-4dae-b28f-41498d372494",
-            "name": "aaa",
-            "username": "aaa",
-            "password_hash": "scrypt:32768:8:1$hWfeykePN03VS0y9$f6916a65c492cfb0de4d64f463fc6f44bad8182bad787f12af25febe7bfdfffddf1f677ccc420094ddf2a1f40ef259a11da71d4c5cca7215735ad0614d21683c",
-            "tasks": [
-                {
-                    "id": "c47c855f-fe7a-4c81-ae14-5a8165eaf1fe",
-                    "name": "aaaaaaaa",
-                    "description": "",
-                    "start": 1793817000,
-                    "end": 1793818800,
-                    "done": false
+                    "start": 1794551880,
+                    "end": 1794552000,
+                    "done": false,
+                    "notify_before": 0,
+                    "notified": true
                 },
                 {
-                    "id": "4a19c018-2f45-4412-a0e1-1af0ce60cfb1",
-                    "name": "aaaa",
-                    "description": "ああああ",
-                    "start": 1795145400,
-                    "end": 1795147200,
-                    "done": false
+                    "id": "46decca2-090e-4ebe-8ed7-19917ddd176c",
+                    "name": "く",
+                    "description": "",
+                    "start": 1794551820,
+                    "end": 1794551940,
+                    "done": false,
+                    "notify_before": 0,
+                    "notified": true
+                }
+            ],
+            "push_subscriptions": [
+                {
+                    "endpoint": "https://fcm.googleapis.com/fcm/send/eHsbdd20yEU:APA91bF-MiKfWJk9ySdpbrPcY3op0JzIAfT3r-16v-L1MjmhvF53J1D8_K3jRUflE6-fkf2ftRnteKOA2DVX-u7zpjrPxH0VbXf_eMe0c1Frtd3TEfQFsTcPcjDp0wPApsr7F6GTIcyM",
+                    "keys": {
+                        "p256dh": "BKIgEKA-yuZqZTPWWYZogXmT6ruPfHgLm2IBQaX8VNT5tWU7r6QUuRIoEsF6rTPWNlSPutkueIVVCSFlkh5aSUo",
+                        "auth": "kgXJmWanFUSUEUrmn7Wrzg"
+                    }
+                },
+                {
+                    "endpoint": "https://web.push.apple.com/QCiDefFpeuAs4ZcS3lDrdxISuXtV42iZAbEO51DJheDXpwba6JIH7MWCVcNopb8fpL4T5BBX1GPIcLGU7xCdJzrnpF-VniZUzzVd5LIrFeuBrCDrxhno-CJPFnUld4aI1kw4kl1zAwQL_W_slz0CncbPfh1LpvmQt0xTJEdBVJE",
+                    "keys": {
+                        "p256dh": "BEYZF8GXt_aP7bU88lhsKBaZKXx_KWJ6w5wiw07eda22u1Uf75lfNpGpRsnOMdNglg6sUGgUVWWr7jgdlA-X5i0",
+                        "auth": "rRHnSL6nxchOCXpzkAmdAQ"
+                    }
+                },
+                {
+                    "endpoint": "https://web.push.apple.com/QLnTZLajXp59TVoj7um8TnT6kSaEJAmoKz0pLdp48tEYfwVN8MrowLbFrg7Tk0YAixslU705n7GujX9iZ1fEJOzNe8AvW_bJVyzsuT2ojswwYp8ViOdrw8R8XWhdBNZkssvYX0aYsIVegdbMezrJdkhjMytY_IA3mE_18-SMuKU",
+                    "keys": {
+                        "p256dh": "BF6YObG_k8aUeUXjT1d6p3AUBzCV8C8YjTyTUEoJA973FOqlZcvw0xnB0vR-agBRTHOSVFPrHuHqoMTQJbeWZkw",
+                        "auth": "_AWP6SPicOAmxuuuteY3lw"
+                    }
                 }
             ]
         },
         {
-            "user_id": "0ba7a84a-fd6e-49ed-941c-83f5ef308a6b",
-            "name": "うつぎ",
-            "username": "うつぎ",
-            "password_hash": "scrypt:32768:8:1$lqSx17UUj0x71qX5$c20923c50343567f2bff80914bea937e2ce66690593e3f6a7e1689074d135b103f4f7f0039c5f78314918df8d7f2a6bbe1b0a3d40094cf8f01989e74efa87ccf",
+            "user_id": "4ce29b8c-7882-4532-a4ed-6024d0fa3419",
+            "name": "panda",
+            "username": "panda",
+            "password_hash": "scrypt:32768:8:1$mfdnkc6ewNK15Drh$d7aaebe5e2d0683cf4b2b98baf3e65b946658cf98e0441328c8cb34d9c9f63759c28043c2f114f2cc4693ee4037e367e2ad4364724498576be4ac1f099ce6d45",
             "tasks": [
                 {
-                    "id": "033918f6-afa0-4a6d-b547-15b05ac121dd",
-                    "name": "研究",
+                    "id": "9a80cabd-a499-431e-b08b-5cd3997961ff",
+                    "name": "hoge",
+                    "description": "hoge",
+                    "start": 1794550860,
+                    "end": 1794551460,
+                    "done": false,
+                    "notify_before": 0,
+                    "notified": true
+                },
+                {
+                    "id": "dd1f3f6a-0907-465e-ab5c-210151834d69",
+                    "name": "hoge2",
                     "description": "",
-                    "start": 1793953260,
-                    "end": 1793955060,
-                    "done": false
+                    "start": 1794550980,
+                    "end": 1794551580,
+                    "done": false,
+                    "notify_before": 0,
+                    "notified": true
+                }
+            ],
+            "push_subscriptions": [
+                {
+                    "endpoint": "https://fcm.googleapis.com/fcm/send/eHJwk2MV4O4:APA91bEEnXNvzbdBo9HxhaBaLef5ItEbEiiMSmc8ZS_AIpD_l5w06fDtBP3idWDt4t61OoK5AGqVUU_jm4ZjJsJZVJwp11nFsyCY_yEBSBCAdsERsJbM4PbjVoEswNx8Zz9yAaJk4cqT",
+                    "keys": {
+                        "p256dh": "BOgApfDmBIbSOSQIig01DcC3lzOW9OnSspnW14PKIEAF7IhbueFc03099G8aGOAe8--RLAs2qDTEgesVQuIG5eU",
+                        "auth": "U5ona-78zQgIrxHGB3GzZg"
+                    }
                 }
             ]
         }

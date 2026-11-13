@@ -5,11 +5,39 @@ Bearerトークン認証を使用するシンプルなタスクAPIです。す�
 ## 起動
 
 ```bash
-pip install flask
+pip install -r ../requirements.txt
 python server.py
 ```
 
-デフォルトでは`http://localhost:5000`で起動します。
+デフォルトでは`http://localhost:8001`で起動します。画面も同じサーバーから配信するので、`http://localhost:8001/app/register/index.html`を開いてください。
+
+初回起動時にWeb Push用の秘密鍵`vapid_private.pem`が自動で作られます。gitには含めません。削除すると鍵が作り直され、各端末で通知を有効にし直す必要があります（ログイン時に自動で登録し直します）。
+
+## スマホでの確認（Cloudflare Tunnel）
+
+PWAとプッシュ通知はHTTPSでしか動かないため、Cloudflare Tunnelで一時的に公開して確認します。
+
+```bash
+# 1. server/ でサーバーを起動
+python server.py
+
+# 2. 別のターミナルでトンネルを開く（cloudflared をインストール済みであること）
+cloudflared tunnel --url http://localhost:8001
+```
+
+表示された`https://xxxx.trycloudflare.com`に`/app/register/index.html`を付けて、スマホで開きます。
+
+1. ブラウザの共有メニューから「ホーム画面に追加」する（iPhoneはiOS 16.4以降で、ホーム画面から開いたときだけ通知を使える）
+2. ホーム画面のアイコンから開いてログインし、「通知を有効にする」を押して許可する
+3. タスクを追加するときに「開始時刻に通知」か「開始5分前に通知」を選ぶ
+4. 指定した時刻になると通知が届く（30秒ごとに確認するので、最大30秒ほど遅れる）。通知を押すと、そのタスクのタイマー画面が開いてタイマーが動き始める
+
+注意点:
+
+- `trycloudflare.com`のURLは起動するたびに変わります。URLが変わると別のアプリとして扱われるため、ホーム画面への追加と通知の許可をやり直してください。
+- ログイン用のトークンはサーバーのメモリにしかないため、サーバーを再起動すると再ログインが必要です。通知の登録先は`data.json`に保存されるので、通知は再起動後も届きます。
+- 通知はサーバーが動いている間しか送れません。
+- VS CodeのLive Serverで画面だけ開いて見た目を確認することもできますが、APIと通知はこのサーバー経由で確認してください。
 
 ## 実装構成
 
@@ -17,8 +45,45 @@ python server.py
 
 - `JsonStore`: `data.json`の読み書きとユーザー検索
 - `AuthService`: パスワードハッシュとBearerトークンの管理
-- `Validator`: ユーザー・ログイン・タスク入力の検証
+- `PushService`: Web Pushの鍵管理と、通知時刻になったタスクの通知送信（バックグラウンドスレッド）
+- `Validator`: ユーザー・ログイン・タスク・通知購読の入力検証
 - `Server`: Flaskルート、認証、レスポンスの組み立て
+
+## `PATCH /api/app/tasks/{task_id}`
+
+認証が必要です。ログイン中のユーザーのタスクの完了状態を変更します。指定できるのは`done`だけで、他の項目を含めると`400`になります。他のユーザーのタスクや存在しないタスクは`404`です。
+
+```json
+{ "done": true }
+```
+
+成功時は`200`で、更新後のタスクを`{"task": {...}}`で返します。完了済みのタスクはデータとして残り、トップ画面の一覧で表示しないだけです。
+
+## プッシュ通知API
+
+### `GET /api/push/public-key`
+
+認証不要です。購読に使うVAPID公開鍵を返します。
+
+```json
+{ "public_key": "BPx..." }
+```
+
+### `POST /api/push/subscribe`
+
+認証が必要です。ブラウザの`PushSubscription.toJSON()`をそのまま送ると、ログイン中のユーザーの通知先として登録します。同じ`endpoint`が他のユーザーに登録されていた場合は、そちらから外します。成功時は`204`です。
+
+```json
+{ "endpoint": "https://...", "keys": { "p256dh": "...", "auth": "..." } }
+```
+
+### `POST /api/push/unsubscribe`
+
+認証が必要です。`{"endpoint": "..."}`で指定した通知先を外します。ログアウト時に呼びます。成功時は`204`です。
+
+### 通知の送信条件
+
+`POST /api/app/tasks`で`notify_before`（`0`または`5`、省略時は`0`）を指定できます。`start - notify_before × 60`の時刻を過ぎ、まだ`end`前で、未完了かつ未通知のタスクに通知を送り、`notified: true`を記録します。通知を押すと`/app/timer/index.html?task=<id>`が開きます。
 
 ## 認証
 

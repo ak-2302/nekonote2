@@ -37,6 +37,18 @@ body {
     letter-spacing: .05em;
 }
 
+/* ホーム画面へ戻るリンク（見た目はヘッダーの文字のまま） */
+.app-header-link {
+    color: inherit;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.app-header-link:focus-visible {
+    outline: 2px solid var(--sub);
+    outline-offset: 4px;
+}
+
 /* 画面中央のまとまり */
 .running {
     flex: 1;
@@ -149,10 +161,38 @@ body {
     border: 1px solid var(--track);
 }
 
+.btn[hidden] {
+    display: none;
+}
+
+/* リンクだがボタンと同じ見た目にする */
+.btn-home {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--btn-bg);
+    color: var(--text);
+    border: 1px solid var(--track);
+    text-decoration: none;
+}
+
 .btn-end {
     background: var(--accent);
     color: var(--on-accent);
     border: none;
+}
+
+/* 完了の保存に失敗したときのメッセージ */
+.save-error {
+    max-width: 320px;
+    margin: 0;
+    color: var(--sub);
+    font-size: 14px;
+    text-align: center;
+}
+
+.save-error[hidden] {
+    display: none;
 }
 
 /* 完了後の表示 */
