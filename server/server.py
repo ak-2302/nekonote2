@@ -331,6 +331,10 @@ class Server:
         self.register_routes()
         self.register_error_handlers()
 
+    @app.route("/")
+    def index():
+        return redirect("/app/register/index.html")
+
     @staticmethod
     def public_user(user):
         return {
