@@ -1,0 +1,4 @@
+[    1096ms] [ERROR] Access to fetch at 'https://nekonote.xn--n8jl2g.xn--q9jyb4c/api/ping' from origin 'http://127.0.0.1:4173' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://127.0.0.1:4173/register/:0
+[    1096ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://nekonote.xn--n8jl2g.xn--q9jyb4c/api/ping:0
+[   20644ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://nekonote.xn--n8jl2g.xn--q9jyb4c/api/login:0
+[   29578ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://nekonote.xn--n8jl2g.xn--q9jyb4c/api/dev/tasks/no-such-task:0

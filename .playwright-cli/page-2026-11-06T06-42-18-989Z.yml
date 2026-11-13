@@ -1,0 +1,28 @@
+- generic [active] [ref=f4e1]:
+  - banner [ref=f4e2]:
+    - heading "トリカカリ" [level=1] [ref=f4e4]
+    - generic [ref=f4e6]: 
+    - button "ログアウト" [ref=f4e27] [cursor=pointer]
+  - main [ref=f4e8]:
+    - generic [ref=f4e10]: 1件
+    - generic [ref=f4e60]:
+      - generic [ref=f4e61]:
+        - generic [ref=f4e62]: NEXT UP
+        - generic [ref=f4e63]:
+          - generic [aria-hidden] [ref=f4e64]: 
+          - text: 直近の予定
+      - paragraph [ref=f4e65]: 12:00
+      - heading "PWAオンライン確認" [level=2] [ref=f4e66]
+      - paragraph [ref=f4e67]: 11/7(土)
+    - list [ref=f4e28]:
+      - listitem [ref=f4e68]:
+        - generic [ref=f4e69]: 12:00
+        - generic [ref=f4e70]:
+          - generic [ref=f4e71]: PWAオンライン確認
+          - generic [ref=f4e72]: 11/7(土)
+          - generic [ref=f4e73]: 所要時間：30分
+        - link "タイマーを開始" [ref=f4e74] [cursor=pointer]:
+          - /url: ../timer/index.html?task=409746fc-c77b-4572-885a-c5266bfc693d
+  - button "タスクを追加" [ref=f4e12] [cursor=pointer]:
+    - generic [aria-hidden] [ref=f4e13]: +
+  - text:  

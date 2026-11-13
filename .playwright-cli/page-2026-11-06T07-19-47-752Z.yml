@@ -1,0 +1,25 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - heading "トリカカリ" [level=1] [ref=e4]
+    - generic [ref=e6]: 
+    - button "ログイン" [ref=e7] [cursor=pointer]
+  - main [ref=e8]:
+    - paragraph [ref=e9]: ログインすると自分のタスクを確認・追加できます。
+    - generic [ref=e10]: ログインしてください
+    - text: 
+    - list
+  - button "タスクを追加" [ref=e12] [cursor=pointer]:
+    - generic [aria-hidden] [ref=e13]: +
+  - text: 
+  - dialog [ref=e16]:
+    - generic [ref=e17]:
+      - heading "ログイン" [level=2] [ref=e18]
+      - button "閉じる" [ref=e19] [cursor=pointer]: ×
+    - generic [ref=e20]:
+      - generic [ref=e21]: ユーザー名
+      - textbox "ユーザー名" [active] [ref=e22]
+    - generic [ref=e23]:
+      - generic [ref=e24]: パスワード
+      - textbox "パスワード" [ref=e25]
+    - button "ログインする" [ref=e26] [cursor=pointer]
+  - text: 

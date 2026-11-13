@@ -1,0 +1,19 @@
+- generic [active] [ref=f4e1]:
+  - banner [ref=f4e2]:
+    - heading "トリカカリ" [level=1] [ref=f4e4]
+    - generic [ref=f4e6]: 
+    - button "ログアウト" [ref=f4e27] [cursor=pointer]
+  - main [ref=f4e8]:
+    - generic [ref=f4e10]: 0件
+    - text: 
+    - list [ref=f4e28]:
+      - listitem [ref=f4e29]:
+        - generic [aria-hidden] [ref=f4e30]: 
+        - paragraph [ref=f4e31]: まだタスクがありません
+        - generic [ref=f4e32]: 右下のボタンから追加できます
+  - button "タスクを追加" [ref=f4e12] [cursor=pointer]:
+    - generic [aria-hidden] [ref=f4e13]: +
+  - text: 
+  - status [ref=f4e33]:
+    - generic [aria-hidden] [ref=f4e34]: 
+    - generic [ref=f4e35]: ログインしました
