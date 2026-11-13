@@ -9,7 +9,7 @@ from datetime import date, datetime
 from functools import wraps
 
 from cryptography.hazmat.primitives import serialization
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, redirect, request
 from py_vapid import Vapid
 from pywebpush import WebPushException, webpush
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -334,6 +334,10 @@ class Server:
         self.register_routes()
         self.register_error_handlers()
 
+    @app.route("/")
+    def index():
+        return redirect("/app/register/index.html")
+
     @staticmethod
     def public_user(user):
         return {
@@ -456,6 +460,10 @@ class Server:
                 response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, OPTIONS"
                 response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type"
             return response
+
+        @self.app.route("/")
+        def index():
+            return redirect("/app/register/index.html")
 
         @self.app.get("/api/ping")
         def ping():

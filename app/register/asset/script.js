@@ -24,6 +24,14 @@ const task_notify_before = document.getElementById('task_notify_before');
 const push_prompt = document.getElementById('push_prompt');
 const push_prompt_text = document.getElementById('push_prompt_text');
 const enable_push_btn = document.getElementById('enable_push');
+const task_date = document.getElementById('task_date');
+const MINUTE_STEP = 1; // ダイヤルの分の刻み
+const time_wheel = createTimeWheel({
+    hourElement: document.getElementById('wheel_hour'),
+    minuteElement: document.getElementById('wheel_minute'),
+    input: task_time,
+    minuteStep: MINUTE_STEP
+});
 const empty_state_content = empty_state.innerHTML;
 let toast_timer;
 let expiry_timer;
@@ -162,8 +170,27 @@ login_form.addEventListener('submit', async (event) => {
     }
 });
 
+// 次の刻みの時刻（例：15:24 → 15:25）。日付をまたぐ場合もあるのでDateで返す
+function nextTimeSlot() {
+    const stepMs = MINUTE_STEP * 60 * 1000;
+    const now = new Date();
+    now.setSeconds(0, 0);
+    return new Date(Math.ceil(now.getTime() / stepMs) * stepMs);
+}
+
+function toDateInputValue(date) {
+    const pad = (value) => String(value).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
 open_register_btn.addEventListener('click', () => {
     modal_backdrop.hidden = false;
+    // 未入力なら、日付と時刻を「次の刻みの時刻」で埋めておく（ダイヤルは表示後でないと位置を設定できない）
+    if (!task_time.value) {
+        const slot = nextTimeSlot();
+        if (!task_date.value) task_date.value = toDateInputValue(slot);
+        time_wheel.set(slot.getHours(), slot.getMinutes());
+    }
     task_name.focus();
 });
 
@@ -185,7 +212,7 @@ add_btn.addEventListener('click', async () => {
     if (!name || !date || !time || !Number.isFinite(durationMinutes) || durationMinutes <= 0) {
         const missing = !name ? 'タスク名' : !date ? '日付' : !time ? '時間' : '所要時間';
         showToast(`${missing}を入力してください`);
-        document.getElementById(!name ? 'task_name' : !date ? 'task_date' : !time ? 'task_time' : 'task_duration').focus();
+        document.getElementById(!name ? 'task_name' : !date ? 'task_date' : !time ? 'wheel_hour' : 'task_duration').focus();
         return;
     }
 

@@ -1,7 +1,7 @@
 .git
 .venv
 env
-./server/__pycache__/
+server/__pycache__/
 .playwright-cli
 # Web Push の秘密鍵（サーバー初回起動時に自動生成）
 server/vapid_private.pem
