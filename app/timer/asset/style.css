@@ -2,9 +2,10 @@
 :root {
     --bg: #f6f5f1;
     --text: #2b2b2b;
-    --sub: #8b8e91;
-    --track: #e4e1d8;
-    --accent: #62d3a9;
+    --sub: #756a80;
+    --track: #e6dff0;
+    --accent: #8fd8bb;
+    --on-accent: #1f4436;
     --btn-bg: #ffffff;
 }
 
@@ -14,7 +15,8 @@
         --text: #ecebe7;
         --sub: #9a978f;
         --track: #34363a;
-        --accent: #ca81eb;
+        --accent: #c9b3ee;
+        --on-accent: #2b2140;
         --btn-bg: #26282b;
     }
 }
@@ -98,6 +100,10 @@ body {
     stroke: var(--sub);
 }
 
+.ring.is-empty .ring-bar {
+    visibility: hidden;
+}
+
 .ring-center {
     position: absolute;
     inset: 0;
@@ -172,7 +178,7 @@ body {
 
 .btn-end {
     background: var(--accent);
-    color: #fff;
+    color: var(--on-accent);
     border: none;
 }
 

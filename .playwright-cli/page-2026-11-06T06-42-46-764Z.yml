@@ -1,0 +1,15 @@
+- generic [active] [ref=f5e1]:
+  - banner [ref=f5e2]:
+    - heading "トリカカリ" [level=1] [ref=f5e4]
+    - generic [ref=f5e6]: 
+    - button "ログアウト" [ref=f5e7] [cursor=pointer]
+  - main [ref=f5e8]:
+    - generic [ref=f5e9]: 接続が必要です
+    - text: 
+    - list [ref=f5e11]:
+      - listitem [ref=f5e12]:
+        - paragraph [ref=f5e13]: 接続が必要です
+        - generic [ref=f5e14]: オンラインで再試行してください
+  - button "タスクを追加" [ref=f5e15] [cursor=pointer]:
+    - generic [aria-hidden] [ref=f5e16]: +
+  - text:  

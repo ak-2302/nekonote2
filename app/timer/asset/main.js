@@ -19,7 +19,7 @@ const confirmDialog = document.getElementById('confirmDialog');
 const cancelEndBtn = document.getElementById('cancelEndBtn');
 const confirmEndBtn = document.getElementById('confirmEndBtn');
 
-// 円の周の長さ（r=90）。この長さ分だけ線をずらすと円が消える
+// 円の周の長さ（r=90）。線の始点をこの長さ分だけ進めると円が消える
 const CIRC = 2 * Math.PI * 90;
 ringBar.style.strokeDasharray = CIRC;
 
@@ -38,7 +38,7 @@ function updateDisplay() {
     // 完了後：円を満タンに戻して「お疲れ様です」
     if (done) {
         ringBar.style.strokeDashoffset = 0;
-        ring.classList.remove('is-paused');
+        ring.classList.remove('is-paused', 'is-empty');
         ring.classList.add('is-done');
         timerElement.textContent = 'お疲れ様です';
         endTimeElement.textContent = '';
@@ -55,8 +55,10 @@ function updateDisplay() {
     const seconds = String(totalSec % 60).padStart(2, '0');
     timerElement.textContent = `${minutes}:${seconds}`;
 
-    // 円グラフ：残り時間の割合だけ線を残す（毎フレーム計算するのでなめらか）
-    ringBar.style.strokeDashoffset = CIRC * (1 - currentElapsed() / totalMs);
+    // 円グラフ：満タンから12時の位置を起点に時計回りで減らす（毎フレーム計算するのでなめらか）
+    const elapsedRatio = currentElapsed() / totalMs;
+    ringBar.style.strokeDashoffset = -CIRC * elapsedRatio;
+    ring.classList.toggle('is-empty', elapsedRatio >= 1); // 線の丸い端が点として残らないように隠す
 
     const paused = endAt === null;
     ring.classList.toggle('is-paused', paused);

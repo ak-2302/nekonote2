@@ -1,0 +1,11 @@
+- generic [active] [ref=f1e1]:
+  - banner [ref=f1e2]: トリカカリ
+  - main [ref=f1e3]:
+    - heading "ログイン後のタスク確認" [level=1] [ref=f1e4]
+    - timer [ref=f1e5]:
+      - generic [ref=f1e9]:
+        - generic [ref=f1e10]: 30:00
+        - generic [ref=f1e11]: 12:30まで
+    - generic [ref=f1e12]:
+      - button "一時停止" [ref=f1e13] [cursor=pointer]
+      - button "終了" [ref=f1e14] [cursor=pointer]

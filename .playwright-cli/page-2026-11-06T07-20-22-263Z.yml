@@ -1,0 +1,28 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - heading "トリカカリ" [level=1] [ref=e4]
+    - generic [ref=e6]: 
+    - button "ログアウト" [ref=e37] [cursor=pointer]
+  - main [ref=e8]:
+    - generic [ref=e10]: 1件
+    - generic [ref=e65]:
+      - generic [ref=e66]:
+        - generic [ref=e67]: NEXT UP
+        - generic [ref=e68]:
+          - generic [aria-hidden] [ref=e69]: 
+          - text: 直近の予定
+      - paragraph [ref=e70]: 12:00
+      - heading "ログイン後のタスク確認" [level=2] [ref=e71]
+      - paragraph [ref=e72]: 11/7(土)
+    - list [ref=e28]:
+      - listitem [ref=e73]:
+        - generic [ref=e74]: 12:00
+        - generic [ref=e75]:
+          - generic [ref=e76]: ログイン後のタスク確認
+          - generic [ref=e77]: 11/7(土)
+          - generic [ref=e78]: 所要時間：30分
+        - link "タイマーを開始" [ref=e79] [cursor=pointer]:
+          - /url: ../timer/index.html?task=0b810503-f4af-43fc-98e9-af632c5f12aa
+  - button "タスクを追加" [ref=e12] [cursor=pointer]:
+    - generic [aria-hidden] [ref=e13]: +
+  - text:  

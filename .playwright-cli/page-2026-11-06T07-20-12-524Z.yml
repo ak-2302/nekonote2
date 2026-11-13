@@ -1,0 +1,40 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - heading "トリカカリ" [level=1] [ref=e4]
+    - generic [ref=e6]: 
+    - button "ログアウト" [ref=e37] [cursor=pointer]
+  - main [ref=e8]:
+    - generic [ref=e10]: 0件
+    - text: 
+    - list [ref=e28]:
+      - listitem [ref=e29]:
+        - generic [aria-hidden] [ref=e38]: 
+        - paragraph [ref=e39]: まだタスクがありません
+        - generic [ref=e40]: 右下のボタンから追加できます
+  - button "タスクを追加" [ref=e12] [cursor=pointer]:
+    - generic [aria-hidden] [ref=e13]: +
+  - dialog [ref=e42]:
+    - generic [ref=e43]:
+      - heading "タスクを追加" [level=2] [ref=e45]
+      - button "閉じる" [ref=e46] [cursor=pointer]:
+        - generic [aria-hidden] [ref=e47]: 
+    - generic [ref=e48]:
+      - generic [ref=e49]: タスク名
+      - textbox "タスク名" [active] [ref=e50]:
+        - /placeholder: 例：資料を確認する
+    - generic [ref=e51]:
+      - generic [ref=e52]: 説明
+      - textbox "説明" [ref=e53]:
+        - /placeholder: 例：第3章を読み、気づいた点をメモする
+    - generic [ref=e54]:
+      - generic [ref=e55]:
+        - generic [ref=e56]: 日付
+        - textbox "日付" [ref=e57]
+      - generic [ref=e58]:
+        - generic [ref=e59]: 時間
+        - textbox "時間" [ref=e60]
+    - generic [ref=e61]:
+      - generic [ref=e62]: 所要時間（分）
+      - spinbutton "所要時間（分）" [ref=e63]
+    - button "登録する" [ref=e64] [cursor=pointer]
+  - text: 
