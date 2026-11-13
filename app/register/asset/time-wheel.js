@@ -110,7 +110,7 @@ function createTimeWheel({ hourElement, minuteElement, input, minuteStep }) {
     const sync = () => {
         if (hour && minute) input.value = `${pad(hour.value)}:${pad(minute.value)}`;
     };
-    hour = createWheelColumn(hourElement, hours, pad, sync);
+    hour = createWheelColumn(hourElement, hours, pad, sync, { loop: true });
     minute = createWheelColumn(minuteElement, minutes, pad, sync, { loop: true });
 
     return {

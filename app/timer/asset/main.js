@@ -150,8 +150,16 @@ function redirectToLogin() {
     location.replace(`../register/index.html${query}`);
 }
 
-// 「終わった」→ サーバーに完了を保存してから完了表示。失敗したらタイマーは動かしたまま
+// 完了をサーバーに保存するか。一旦無効化中（true に戻すと PATCH /api/app/tasks/<id> で保存する）
+const SAVE_DONE_TO_SERVER = false;
+
+// 「終わった」→ 完了表示。保存が有効なら、サーバーに保存してから表示し、失敗したらタイマーは動かしたまま
 confirmEndBtn.addEventListener('click', async () => {
+    if (!SAVE_DONE_TO_SERVER) {
+        confirmDialog.close();
+        completeTask();
+        return;
+    }
     confirmEndBtn.disabled = true;
     saveErrorElement.hidden = true;
     try {
