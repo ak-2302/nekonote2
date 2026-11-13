@@ -410,7 +410,12 @@ class Server:
         # 画面もAPIと同じオリジンから配信する（PWAにはHTTPSの同一オリジン配信が必要）。
         # フォルダごとの自動配信はせず、PUBLIC_FILES にあるファイルだけを serve_app_file で返す
         self.app_dir = os.path.abspath(os.path.join(server_dir, "..", "app"))
-        self.app = Flask(__name__, static_folder=None)
+        sserver_dir = os.path.dirname(os.path.abspath(__file__))
+        self.app = Flask(
+            __name__,
+            static_folder=os.path.join(server_dir, "..", "app"),
+            static_url_path="/app",
+        )
         data_path = os.path.join(server_dir, "data.json")
         self.store = JsonStore(data_path)
         self.auth = AuthService(self.store)
@@ -419,6 +424,7 @@ class Server:
             os.path.join(server_dir, "vapid_private.pem"),
             os.environ.get("VAPID_SUBJECT", "mailto:nekonote@example.com"),
         )
+        
         self.register_routes()
         self.register_error_handlers()
 
