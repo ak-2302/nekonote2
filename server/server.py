@@ -323,6 +323,7 @@ class Server:
             static_folder=os.path.join(server_dir, "..", "app"),
             static_url_path="/app",
         )
+        print(f"self.app = {self.app}")
         data_path = os.path.join(server_dir, "data.json")
         self.store = JsonStore(data_path)
         self.auth = AuthService(self.store)
@@ -333,10 +334,6 @@ class Server:
         )
         self.register_routes()
         self.register_error_handlers()
-
-    @app.route("/")
-    def index():
-        return redirect("/app/register/index.html")
 
     @staticmethod
     def public_user(user):
