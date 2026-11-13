@@ -81,18 +81,18 @@
                 <input type="text" id="task_name" placeholder="例：資料を確認する">
             </div>
             <div class="form-field">
-                <label for="task_description">説明</label>
-                <textarea id="task_description" rows="3" placeholder="例：第3章を読み、気づいた点をメモする"></textarea>
+                <label for="task_date">日付</label>
+                <input type="date" id="task_date">
             </div>
-            <div class="form-row">
-                <div class="form-field">
-                    <label for="task_date">日付</label>
-                    <input type="date" id="task_date">
+            <div class="form-field">
+                <span class="field-label" id="task_time_label">開始時刻</span>
+                <!-- スクロールで選ぶダイヤル。選んだ値は task_time に "HH:MM" で入る -->
+                <div class="time-wheel" role="group" aria-labelledby="task_time_label">
+                    <div class="wheel-column" id="wheel_hour" aria-label="時"></div>
+                    <span class="wheel-separator" aria-hidden="true">:</span>
+                    <div class="wheel-column" id="wheel_minute" aria-label="分"></div>
                 </div>
-                <div class="form-field">
-                    <label for="task_time">時間</label>
-                    <input type="time" id="task_time">
-                </div>
+                <input type="hidden" id="task_time">
             </div>
             <div class="form-field">
                 <label for="task_duration">所要時間（分）</label>
@@ -104,6 +104,10 @@
                     <option value="0">開始時刻に通知</option>
                     <option value="5">開始5分前に通知</option>
                 </select>
+            </div>
+            <div class="form-field">
+                <label for="task_description">説明（任意）</label>
+                <textarea id="task_description" rows="3" placeholder="例：第3章を読み、気づいた点をメモする"></textarea>
             </div>
             <button id="add-btn" type="button">登録する</button>
         </div>
@@ -132,6 +136,7 @@
     </div>
     <script src="../asset/api.js"></script>
     <script src="../asset/pwa.js"></script>
+    <script src="./asset/time-wheel.js"></script>
     <script src="./asset/script.js"></script>
 </body>
 

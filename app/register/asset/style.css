@@ -338,6 +338,10 @@ body {
 
 #register_container {
     width: min(100%, 440px);
+    /* 画面が低い端末でも最後まで操作できるよう、はみ出す分はスクロールさせる */
+    max-height: calc(100dvh - 40px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 24px;
     background: var(--surface);
     border-radius: 22px;
@@ -410,7 +414,8 @@ body {
     margin-bottom: 16px;
 }
 
-.form-field label {
+.form-field label,
+.form-field .field-label {
     color: var(--muted);
     font-size: 13px;
     font-weight: 600;
@@ -446,6 +451,84 @@ body {
 .form-field input[type="time"]::-webkit-date-and-time-value {
     margin: 0;
     text-align: left;
+}
+
+/* 時刻ダイヤル（time-wheel.js）。行の高さは WHEEL_ITEM_HEIGHT と合わせる */
+.time-wheel {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    overflow: hidden;
+}
+
+/* 真ん中の選択中の帯 */
+.time-wheel::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    left: 12px;
+    height: 32px;
+    transform: translateY(-50%);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    pointer-events: none;
+}
+
+.wheel-column {
+    position: relative;
+    width: 72px;
+    height: 160px;
+    overflow-y: scroll;
+    overscroll-behavior: contain;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    /* 上下をぼかしてダイヤルらしく見せる */
+    -webkit-mask-image: linear-gradient(transparent, #000 35%, #000 65%, transparent);
+    mask-image: linear-gradient(transparent, #000 35%, #000 65%, transparent);
+    outline: none;
+}
+
+.wheel-column::-webkit-scrollbar {
+    display: none;
+}
+
+.wheel-column:focus-visible {
+    -webkit-mask-image: none;
+    mask-image: none;
+    box-shadow: inset 0 0 0 2px var(--accent);
+    border-radius: 9px;
+}
+
+.wheel-item {
+    height: 32px;
+    color: var(--muted);
+    font-size: 20px;
+    font-variant-numeric: tabular-nums;
+    line-height: 32px;
+    text-align: center;
+    scroll-snap-align: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.wheel-item.is-selected {
+    color: var(--text);
+    font-weight: 700;
+}
+
+.wheel-separator {
+    position: relative;
+    color: var(--text);
+    font-size: 20px;
+    font-weight: 700;
 }
 
 /* 選択欄も独自の見た目をやめ、矢印を自前で表示する */
