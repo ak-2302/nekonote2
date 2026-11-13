@@ -1,7 +1,6 @@
 const AUDIO_API_URL = 'https://nekonoteapi.meiteya.workers.dev/api/audio';
 
-// [AI] APIの一覧に含まれるパスへ変更すると、タイマー中に再生する音源を切り替えられる。
-export const SELECTED_AUDIO_PATH = 'PokemonRG_Music/02 マサラタウンのテーマ.opus';
+export const SELECTED_AUDIO_INDEX = 1;
 
 let timer_audio;
 let audio_list_promise;
@@ -31,8 +30,11 @@ export async function playTimerAudio() {
 
     try {
         const audio_list = await getAudioList();
-        const selected_audio = audio_list.find((audio) => audio.path === SELECTED_AUDIO_PATH);
-        if (!selected_audio?.url || !should_play) return;
+        const selected_audio = audio_list[SELECTED_AUDIO_INDEX];
+        if (!selected_audio?.url) {
+            throw new Error(`指定した音源インデックスが一覧にありません: ${SELECTED_AUDIO_INDEX}`);
+        }
+        if (!should_play) return;
 
         if (!timer_audio || timer_audio.src !== selected_audio.url) {
             if (timer_audio) timer_audio.pause();
