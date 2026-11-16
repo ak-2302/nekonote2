@@ -9,7 +9,7 @@ from datetime import date, datetime
 from functools import wraps
 
 from cryptography.hazmat.primitives import serialization
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, redirect, request
 from py_vapid import Vapid
 from pywebpush import WebPushException, webpush
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -21,21 +21,33 @@ NOTIFY_BEFORE_OPTIONS = {0, 5}
 class JsonStore:
     def __init__(self, path):
         self.path = path
-        self.data = self._load()
         # 通知スレッドとリクエスト処理が同時に書き込まないようにする
         self.lock = threading.RLock()
+        if not os.path.exists(self.path):
+            with open(self.path, "w", encoding="utf-8") as data_file:
+                json.dump({"users": []}, data_file)
+        self.data = self._load()
+        self._mtime = os.path.getmtime(self.path)
 
     def _load(self):
         with open(self.path, "r", encoding="utf-8") as data_file:
             return json.load(data_file)
 
     def reload(self):
-        self.data = self._load()
+        """ファイルが外部で書き換えられた時だけ読み直す（自分の保存では読み直さない）。"""
+        with self.lock:
+            mtime = os.path.getmtime(self.path)
+            if mtime != self._mtime:
+                self.data = self._load()
+                self._mtime = mtime
 
     def save(self):
         with self.lock:
-            with open(self.path, "w", encoding="utf-8") as data_file:
+            tmp_path = self.path + ".tmp"
+            with open(tmp_path, "w", encoding="utf-8") as data_file:
                 json.dump(self.data, data_file, ensure_ascii=False, indent=4)
+            os.replace(tmp_path, self.path)  # 書き込み途中のファイルを読ませない
+            self._mtime = os.path.getmtime(self.path)
 
     @property
     def users(self):
@@ -86,13 +98,19 @@ class AuthService:
         self.tokens = {}
 
     def create_password_hash(self, password):
-        return generate_password_hash(password)
+        # 既定の scrypt は、OpenSSLの古いPython(macOSの一部のPython 3.9など)で使えないため
+        # どの環境でも使える pbkdf2 を明示する
+        return generate_password_hash(password, method="pbkdf2:sha256")
 
     def authenticate(self, username, password):
         user = self.store.find_by_username(username)
         if user is None or not user.get("password_hash"):
             return None
-        if not check_password_hash(user["password_hash"], password):
+        try:
+            if not check_password_hash(user["password_hash"], password):
+                return None
+        except (AttributeError, ValueError):
+            # この環境で扱えない方式(scryptなど)で保存された古いハッシュ
             return None
         return user
 
@@ -333,6 +351,7 @@ class Server:
         )
         self.register_routes()
         self.register_error_handlers()
+        self.register_page_routes()
 
     @staticmethod
     def public_user(user):
@@ -358,6 +377,10 @@ class Server:
             "due_date": data.get("due_date"),
             "status": data.get("status", "todo"),
         }
+
+    @staticmethod
+    def task_status(task):
+        return task.get("status", "done" if task.get("done") else "todo")
 
     @staticmethod
     def find_task(user, task_id):
@@ -408,7 +431,7 @@ class Server:
                     400,
                     {"status": "todo、in_progress、doneのいずれかです"},
                 )
-            tasks = [task for task in tasks if task["status"] == status]
+            tasks = [task for task in tasks if self.task_status(task) == status]
         return jsonify({"tasks": tasks, "total": len(tasks)})
 
     @staticmethod
@@ -443,6 +466,11 @@ class Server:
         def handle_not_found(error):
             return self.error("NOT_FOUND", "指定されたURLが見つかりません", 404)
 
+        @self.app.errorhandler(500)
+        def handle_server_error(error):
+            # HTMLではなくJSONで返す（フロントの response.json() が失敗しないように）
+            return self.error("INTERNAL_ERROR", "サーバーでエラーが発生しました", 500)
+
     def register_routes(self):
         @self.app.before_request
         def refresh_json_store():
@@ -453,7 +481,7 @@ class Server:
         def development_cors(response):
             if request.path.startswith("/api/"):
                 response.headers["Access-Control-Allow-Origin"] = "*"
-                response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, OPTIONS"
+                response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, DELETE, OPTIONS"
                 response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type"
             return response
 
@@ -674,7 +702,7 @@ class Server:
     def delete_task_from_user(self, user, task_id):
         original_count = len(user["tasks"])
         user["tasks"] = [
-            task for task in user["tasks"] if str(task["task_id"]) != task_id
+            task for task in user["tasks"] if str(task.get("id", task.get("task_id"))) != task_id
         ]
         if len(user["tasks"]) == original_count:
             return self.error("TASK_NOT_FOUND", "タスクが見つかりません", 404)
@@ -725,6 +753,14 @@ class Server:
         def delete_task(user_id, task_id):
             user, error = self.owned_user(user_id)
             return error or self.delete_task_from_user(user, task_id)
+
+    def register_page_routes(self):
+        # 画面は app フォルダ（/app/ 配下で静的配信）にあり、
+        # service-worker.js も /app/service-worker.js から配信されるので、
+        # ここでは入口(/)だけをホーム画面（登録ページ）へ送る。
+        @self.app.route("/")
+        def index():
+            return redirect("/app/register/index.html")
 
     def run(self):
         self.push.start()
