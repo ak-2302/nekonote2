@@ -429,6 +429,33 @@
                     }
                 }
             ]
+        },
+        {
+            "user_id": "4e73c37b-1496-4566-8e2f-9090f303a7b3",
+            "name": "#qwe",
+            "username": "#qwe",
+            "password_hash": "pbkdf2:sha256:1000000$JoZvMDioVX2YPLCF$84fef6f5774db1e2367f3d8015a1834fd04adbb82fe7029c66c221624c7be785",
+            "tasks": [
+                {
+                    "id": "d800af56-7418-4a9e-b695-a096ea62c4ed",
+                    "name": "皿洗い",
+                    "description": "",
+                    "start": 1794952740,
+                    "end": 1794953340,
+                    "done": false,
+                    "notify_before": 0,
+                    "notified": true
+                }
+            ],
+            "push_subscriptions": [
+                {
+                    "endpoint": "https://web.push.apple.com/QGho1Pmwn3_rkRttK-xdmvB2Ev79Ys6fgOgAolRImNHrYDLBzWNp7yh7CmsyhPAUKcQdjCtLSvqqkM8nQXy-SUVx-FYMUzx8uWFsAp2h9eJTyYCv9zZVHO6suv-BYuU5MQJNNMZ4g4tYc7V6HZpKF78XcAfJ-6IarS13zn415pM",
+                    "keys": {
+                        "p256dh": "BAsXskPYgqm28sq0FfzpXB4T0uqGxsOQOYtLWoh7iPzrnM_Vb051i-Kh32QM6_m-2n837gSiQXojgmT5bu8_zac",
+                        "auth": "mROjsHyE1gQIwIsJtK_DvQ"
+                    }
+                }
+            ]
         }
     ]
 }
