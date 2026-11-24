@@ -128,6 +128,23 @@ body {
     background: var(--text);
     border-radius: 26px;
     box-shadow: 0 16px 34px rgba(39, 42, 45, .16);
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.next-task:hover {
+    box-shadow: 0 20px 40px rgba(39, 42, 45, .22);
+}
+
+.next-task:active {
+    transform: scale(.98);
+}
+
+.next-task:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 4px;
 }
 
 .next-task::after {
@@ -197,6 +214,19 @@ body {
 .next-task-date {
     color: rgba(255, 255, 255, .65);
     font-size: 13px;
+}
+
+.next-task-hint {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    justify-self: start;
+    margin-top: 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
 }
 
 #task_list {
@@ -336,18 +366,6 @@ body {
     display: none;
 }
 
-#register_container {
-    width: min(100%, 440px);
-    /* 画面が低い端末でも最後まで操作できるよう、はみ出す分はスクロールさせる */
-    max-height: calc(100dvh - 40px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding: 24px;
-    background: var(--surface);
-    border-radius: 22px;
-    box-shadow: var(--shadow);
-}
-
 .login-modal {
     width: min(100%, 380px);
     padding: 24px;
@@ -397,12 +415,7 @@ body {
     cursor: pointer;
 }
 
-.form-row {
-    display: flex;
-    gap: 12px;
-}
-
-.form-row .form-field {
+.form-field {
     flex: 1;
     /* 横並びの中で欄が縮めるようにする（iOSの日付欄は最小幅を持つため、はみ出す） */
     min-width: 0;
@@ -421,8 +434,7 @@ body {
     font-weight: 600;
 }
 
-.form-field input,
-.form-field select {
+.form-field input {
     display: block;
     width: 100%;
     min-width: 0;
@@ -438,55 +450,6 @@ body {
     outline: none;
 }
 
-/* iOS独自の見た目をやめて、他の入力欄とそろえる */
-.form-field input[type="date"],
-.form-field input[type="time"] {
-    -webkit-appearance: none;
-    appearance: none;
-    line-height: 46px;
-    text-align: left;
-}
-
-.form-field input[type="date"]::-webkit-date-and-time-value,
-.form-field input[type="time"]::-webkit-date-and-time-value {
-    margin: 0;
-    text-align: left;
-}
-
-/* 通知のオプション（開始時刻の通知は常に送り、5分前の通知だけ選べる） */
-.notify-default {
-    color: var(--text);
-    font-size: 15px;
-}
-
-.form-field .checkbox-field {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 48px;
-    padding: 0 13px;
-    color: var(--text);
-    font-size: 15px;
-    font-weight: 400;
-    background: var(--bg);
-    border: 1px solid var(--line);
-    border-radius: 11px;
-    cursor: pointer;
-}
-
-.form-field .checkbox-field input[type="checkbox"] {
-    flex: none;
-    width: 20px;
-    height: 20px;
-    padding: 0;
-    /* 入力欄用のスタイル（.form-field input）を打ち消す */
-    background: none;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-    accent-color: var(--accent-dark);
-}
-
 /* 時刻ダイヤル（time-wheel.js）。行の高さは WHEEL_ITEM_HEIGHT と合わせる */
 .time-wheel {
     position: relative;
@@ -496,7 +459,7 @@ body {
     gap: 8px;
     background: var(--bg);
     border: 1px solid var(--line);
-    border-radius: 11px;
+    border-radius: 14px;
     overflow: hidden;
 }
 
@@ -507,18 +470,19 @@ body {
     top: 50%;
     right: 12px;
     left: 12px;
-    height: 32px;
+    height: 40px;
     transform: translateY(-50%);
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 9px;
+    border-radius: 10px;
     pointer-events: none;
 }
 
 .wheel-column {
     position: relative;
-    width: 72px;
-    height: 160px;
+    width: 80px;
+    /* WHEEL_ITEM_HEIGHT × WHEEL_VISIBLE_ITEMS */
+    height: 200px;
     overflow-y: scroll;
     overscroll-behavior: contain;
     scroll-snap-type: y mandatory;
@@ -541,11 +505,11 @@ body {
 }
 
 .wheel-item {
-    height: 32px;
+    height: 40px;
     color: var(--muted);
-    font-size: 20px;
+    font-size: 24px;
     font-variant-numeric: tabular-nums;
-    line-height: 32px;
+    line-height: 40px;
     text-align: center;
     scroll-snap-align: center;
     cursor: pointer;
@@ -561,25 +525,429 @@ body {
 .wheel-separator {
     position: relative;
     color: var(--text);
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.form-field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(98, 198, 160, .18);
+}
+
+/* ===== タスク登録シート（画面下から出るステップ式） ===== */
+.sheet-backdrop {
+    position: fixed;
+    z-index: 10;
+    inset: 0;
+    background: rgba(39, 42, 45, 0);
+    transition: background .3s;
+}
+
+.sheet-backdrop[hidden] {
+    display: none;
+}
+
+.sheet-backdrop.open {
+    background: rgba(39, 42, 45, .35);
+}
+
+.sheet {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 560px);
+    height: 70vh;
+    height: min(70dvh, 640px);
+    margin: 0 auto;
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--surface);
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -10px 40px rgba(39, 42, 45, .15);
+    transform: translateY(100%);
+    transition: transform .32s cubic-bezier(.2, .8, .2, 1);
+}
+
+.sheet-backdrop.open .sheet {
+    transform: translateY(0);
+}
+
+.sheet-top {
+    padding: 10px 20px 6px;
+    /* ドラッグで閉じる操作をブラウザのスクロールに取られないようにする */
+    touch-action: none;
+    cursor: grab;
+}
+
+.sheet-grip {
+    width: 40px;
+    height: 5px;
+    margin: 0 auto 12px;
+    background: #d8d6cf;
+    border-radius: 3px;
+}
+
+.sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.step-title {
     font-size: 20px;
     font-weight: 700;
 }
 
-/* 選択欄も独自の見た目をやめ、矢印を自前で表示する */
-.form-field select {
-    -webkit-appearance: none;
-    appearance: none;
-    padding-right: 40px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238b8e91' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
+.sheet-head .close-button {
+    flex: none;
+    font-size: 18px;
 }
 
-.form-field textarea {
-    width: 100%;
-    min-height: 88px;
-    padding: 12px 13px;
+/* 進み具合のバー。入力済みは塗り、現在地は濃い色 */
+.step-progress {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.step-progress button {
+    display: grid;
+    flex: 1;
+    gap: 6px;
+    padding: 0 0 4px;
+    color: var(--muted);
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.step-progress button::before {
+    height: 4px;
+    content: "";
+    background: var(--line);
+    border-radius: 2px;
+    transition: background .2s;
+}
+
+.step-progress button.is-done::before {
+    background: var(--accent);
+}
+
+.step-progress button.is-current {
+    color: var(--accent-dark);
+}
+
+.step-progress button.is-current::before {
+    background: var(--accent-dark);
+}
+
+/* ステップを横に並べ、スナップ付きの横スクロールで1つずつ移動する */
+.steps {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+}
+
+.steps::-webkit-scrollbar {
+    display: none;
+}
+
+/* 画面外のステップも display:none にしない（時刻ダイヤルの位置を設定できなくなるため） */
+.step {
+    display: flex;
+    flex: 0 0 100%;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 12px 20px 20px;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+}
+
+/* 中身をシートの縦方向の中央に置き、ステップ間でボタンの位置をそろえる（溢れたら上へスクロール） */
+.step-body {
+    margin-block: auto;
+}
+
+.step-hint {
+    margin-bottom: 12px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* チップ（タスク名・日付・所要時間） */
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.chip {
+    position: relative;
+    display: inline-grid;
+    align-content: center;
+    min-height: 52px;
+    padding: 8px 18px;
     color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+    transition: transform .1s, background .15s;
+}
+
+.chip:active {
+    transform: scale(.96);
+}
+
+.chip small {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.chip.is-selected {
+    color: #fff;
+    background: var(--accent-dark);
+    border-color: var(--accent-dark);
+}
+
+.chip.is-selected small {
+    color: rgba(255, 255, 255, .8);
+}
+
+.chip.add {
+    color: #fff;
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.chip.ghost {
+    color: var(--muted);
+    background: transparent;
+    border-style: dashed;
+}
+
+.chip .prev-tag {
+    position: absolute;
+    top: -8px;
+    right: -4px;
+    padding: 2px 6px;
+    color: #fff;
+    background: var(--text);
+    border-radius: 8px;
+    font-size: 10px;
+}
+
+/* テンプレートの編集中は × を出して揺らす */
+.chips.editing .chip.template {
+    padding-right: 34px;
+    animation: chip-wiggle .3s ease-in-out infinite alternate;
+}
+
+.chips.editing .chip.template::after {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    content: "×";
+    color: #c95555;
+    font-size: 18px;
+    transform: translateY(-50%);
+}
+
+@keyframes chip-wiggle {
+    from { transform: rotate(-1deg); }
+    to { transform: rotate(1deg); }
+}
+
+.chips.wide .chip {
+    flex: 1 1 calc(33.33% - 10px);
+}
+
+/* 4列は幅が狭いので、左右の余白を詰めて「その他」が折り返さないようにする */
+.chips.wide.four .chip {
+    flex: 1 1 calc(25% - 10px);
+    padding-inline: 8px;
+    white-space: nowrap;
+}
+
+.inline-input {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.inline-input[hidden] {
+    display: none;
+}
+
+.inline-input input {
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    padding: 0 13px;
+    color: var(--text);
+    /* 16px未満だとiOSが入力時に画面を拡大してしまう */
+    font: inherit;
+    font-size: 16px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    outline: none;
+}
+
+/* iOS独自の見た目をやめて、他の入力欄とそろえる */
+.inline-input input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    line-height: 46px;
+    text-align: left;
+}
+
+.inline-input input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(98, 198, 160, .18);
+}
+
+.inline-input button,
+.sheet-primary {
+    min-height: 48px;
+    padding: 0 18px;
+    color: #fff;
+    background: var(--accent-dark);
+    border: 0;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.sheet-primary {
+    width: 100%;
+    min-height: 54px;
+    margin-top: 16px;
+    font-size: 16px;
+}
+
+.sheet-primary:disabled {
+    background: #c9cbc8;
+    cursor: default;
+}
+
+.text-button {
+    margin-top: 14px;
+    padding: 6px 0;
+    color: var(--muted);
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font-size: 13px;
+    text-decoration: underline;
+}
+
+.time-note {
+    min-height: 20px;
+    margin-top: 10px;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* 確認：選んだ内容を「〇〇 を 〇〇 に …」の文章の形で並べる */
+.summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 8px;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.pill {
+    min-height: 48px;
+    padding: 0 18px;
+    color: #fff;
+    background: var(--accent-dark);
+    border: 1px solid var(--accent-dark);
+    border-radius: 24px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 700;
+    transition: transform .1s;
+}
+
+.pill:active {
+    transform: scale(.96);
+}
+
+.pill.empty {
+    color: #c95555;
+    background: transparent;
+    border: 1px dashed #c95555;
+    font-size: 14px;
+}
+
+.summary-joint {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.summary-note {
+    min-height: 18px;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.summary-note.warn {
+    color: #c95555;
+    font-weight: 700;
+}
+
+.option-row {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+}
+
+.pill.option.off {
+    color: var(--muted);
+    background: transparent;
+    border: 1px dashed var(--muted);
+}
+
+.description-details {
+    margin-top: 12px;
+}
+
+.description-details summary {
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.description-details textarea {
+    width: 100%;
+    min-height: 72px;
+    margin-top: 8px;
+    padding: 10px 13px;
+    color: var(--text);
+    font: inherit;
+    font-size: 16px;
     background: var(--bg);
     border: 1px solid var(--line);
     border-radius: 11px;
@@ -587,27 +955,9 @@ body {
     resize: vertical;
 }
 
-.form-field textarea:focus {
+.description-details textarea:focus {
     border-color: var(--accent-dark);
     box-shadow: 0 0 0 3px rgba(98, 198, 160, .18);
-}
-
-.form-field input:focus,
-.form-field select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(98, 198, 160, .18);
-}
-
-#add-btn {
-    width: 100%;
-    min-height: 50px;
-    margin-top: 8px;
-    color: #fff;
-    background: var(--accent-dark);
-    border: 0;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 700;
 }
 
 .toast {
@@ -630,6 +980,12 @@ body {
     font-weight: 600;
 }
 
+/* 正常な知らせ（ログインしました など）。エラーの赤と見分けられるよう緑にする */
+.toast.is-success {
+    background: var(--accent-dark);
+    box-shadow: 0 10px 24px rgba(31, 80, 60, .22);
+}
+
 .toast[hidden] {
     display: none;
 }
@@ -647,7 +1003,7 @@ body {
         margin-bottom: 36px;
     }
 
-    #register_container {
-        padding: 20px;
+    .step {
+        padding-inline: 16px;
     }
 }

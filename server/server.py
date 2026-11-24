@@ -228,35 +228,63 @@ class PushService:
             print(f"通知の送信に失敗しました: {error}")
             return None
 
+    # 開始後の通知。(種類, 開始からの秒数) を早い順に並べる。
+    # "start" が開始時刻の通知で、残りはタイマー画面を開くまで送る追い通知
+    START_STAGES = [("start", 0), ("60", 60), ("90", 90), ("120", 120), ("150", 150)]
+
     # 通知の種類ごとの「通知済み」の印
-    NOTIFIED_FLAGS = {"before": "notified_before", "start": "notified"}
+    NOTIFIED_FLAGS = {
+        "before": "notified_before",
+        "start": "notified",
+        **{kind: f"notified_{kind}" for kind, offset in START_STAGES if offset},
+    }
 
     def due_notifications(self, now):
-        """今送るべき通知を (user, task, kind) で返す。kind は "before"（n分前）か "start"（開始時刻）。"""
+        """今送るべき通知を (user, task, kind) で返す。kind は "before"（n分前）か START_STAGES の種類。"""
         for user in self.store.users:
             if not user.get("push_subscriptions"):
                 continue
             for task in user.get("tasks", []):
                 if "start" not in task or "end" not in task or task.get("done"):
                     continue
+                # 一度タイマー画面を開いたタスクには、開始時刻の通知だけを送り、n分前の通知と追い通知は送らない
+                opened = task.get("timer_opened")
+                stages = self.START_STAGES[:1] if opened else self.START_STAGES
                 before = task.get("notify_before", 0)
                 # n分前の通知は、開始時刻より前の間だけ送る（過ぎていたら開始時刻の通知だけにする）
                 if (
                     before
+                    and not opened
                     and not task.get("notified_before")
                     and task["start"] - before * 60 <= now < task["start"]
                 ):
                     yield user, task, "before"
-                elif not task.get("notified") and task["start"] <= now < task["end"]:
-                    yield user, task, "start"
+                elif task["start"] <= now < task["end"]:
+                    # 時刻を過ぎた中で最も新しい通知だけを送る（サーバー停止明けにまとめて届かないようにする）
+                    elapsed = now - task["start"]
+                    kind = [kind for kind, offset in stages if offset <= elapsed][-1]
+                    if not task.get(self.NOTIFIED_FLAGS[kind]):
+                        yield user, task, kind
+
+    def mark_notified(self, task, kind):
+        """送る通知に印を付ける。開始後の通知なら、それより前の時刻の通知も送ったものとして扱う。"""
+        task[self.NOTIFIED_FLAGS[kind]] = True
+        if kind == "before":
+            return
+        for stage, _ in self.START_STAGES:
+            if stage == kind:
+                break
+            task[self.NOTIFIED_FLAGS[stage]] = True
 
     @staticmethod
     def payload_for(task, kind):
         if kind == "before":
             body = f"{task['notify_before']}分後に「{task['name']}」の予定があります"
-        else:
+        elif kind == "start":
             minutes = max(1, round((task["end"] - task["start"]) / 60))
             body = f"{minutes}分のタイマーが始まっています！"
+        else:
+            body = f"「{task['name']}」のタイマーが始まっています。タイマー画面を開いて取りかかりましょう！"
         return {"task_id": task["id"], "title": task["name"], "body": body}
 
     def notify_due_tasks(self):
@@ -266,7 +294,7 @@ class PushService:
         with self.store.lock:
             jobs = []
             for user, task, kind in self.due_notifications(now):
-                task[self.NOTIFIED_FLAGS[kind]] = True
+                self.mark_notified(task, kind)
                 jobs.append({
                     "user_id": user["user_id"],
                     "task_id": task["id"],
@@ -608,6 +636,19 @@ class Server:
                 task["done"] = data["done"]
                 self.store.save()
             return jsonify({"task": self.development_task(task)})
+
+        # タイマー画面を開いたことを記録する。以降、このタスクの通知は送らない
+        @self.app.post("/api/app/tasks/<task_id>/opened")
+        @self.authenticated
+        def mark_application_task_opened(task_id):
+            task = self.find_task(request.current_user, task_id)
+            if task is None:
+                return self.error("TASK_NOT_FOUND", "タスクが見つかりません", 404)
+            with self.store.lock:
+                if not task.get("timer_opened"):
+                    task["timer_opened"] = True
+                    self.store.save()
+            return "", 204
 
         @self.app.post("/api/app/tasks")
         @self.authenticated

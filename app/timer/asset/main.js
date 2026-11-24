@@ -181,6 +181,15 @@ confirmEndBtn.addEventListener('click', async () => {
     }
 });
 
+// タイマー画面を開いたことをサーバーに知らせ、追い通知を止める。
+// 失敗してもタイマーは動かし、オンラインに戻ったときにもう一度送る
+function notifyTimerOpened() {
+    markTaskOpened(timerParam).catch((error) => {
+        if (error.status === 401 || error.status === 404) return;
+        window.addEventListener('online', notifyTimerOpened, { once: true });
+    });
+}
+
 // URLのUUIDからログイン中のユーザーのタスクを取得して表示する
 const timerParam = new URLSearchParams(window.location.search).get('task');
 
@@ -191,6 +200,7 @@ getTask(timerParam).then((task) => {
         return;
     }
     taskTitleElement.textContent = task.name;
+    notifyTimerOpened();
     taskStartMs = task.start * 1000;
     taskEndMs = task.end * 1000;
     totalMs = Math.max(0, taskEndMs - taskStartMs);

@@ -2,7 +2,7 @@
 // iOS・Android・PCで同じ見た目にし、タップせずにすぐ操作できるよう自作している。
 // 選んだ値は hidden の input に "HH:MM" で書き込むので、フォーム側は普通の時刻入力と同じように読める。
 
-const WHEEL_ITEM_HEIGHT = 32;    // style.css の .wheel-item の高さと合わせる
+const WHEEL_ITEM_HEIGHT = 40;    // style.css の .wheel-item の高さと合わせる
 const WHEEL_VISIBLE_ITEMS = 5;   // 見える行数（奇数）。真ん中の行が選択中
 const WHEEL_LOOP_COPIES = 5;     // ループ時に値の並びを何周分並べるか（奇数）
 
@@ -101,14 +101,17 @@ function createWheelColumn(element, values, format, onChange, { loop = false } =
     };
 }
 
-function createTimeWheel({ hourElement, minuteElement, input, minuteStep }) {
+// input（hidden の input）と onChange(hour, minute) は、どちらか必要な方だけ渡せばよい
+function createTimeWheel({ hourElement, minuteElement, input, minuteStep, onChange }) {
     const pad = (value) => String(value).padStart(2, '0');
     const hours = Array.from({ length: 24 }, (_, i) => i);
     const minutes = Array.from({ length: Math.ceil(60 / minuteStep) }, (_, i) => i * minuteStep);
     let hour;
     let minute;
     const sync = () => {
-        if (hour && minute) input.value = `${pad(hour.value)}:${pad(minute.value)}`;
+        if (!hour || !minute) return;
+        if (input) input.value = `${pad(hour.value)}:${pad(minute.value)}`;
+        if (onChange) onChange(hour.value, minute.value);
     };
     hour = createWheelColumn(hourElement, hours, pad, sync, { loop: true });
     minute = createWheelColumn(minuteElement, minutes, pad, sync, { loop: true });

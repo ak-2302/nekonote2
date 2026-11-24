@@ -31,6 +31,8 @@ body {
 
 /* サービス名 */
 .app-header {
+    justify-content: space-between;
+    gap: 12px;
     padding: 16px 0;
     font-size: 14px;
     color: var(--sub);
@@ -47,6 +49,32 @@ body {
 .app-header-link:focus-visible {
     outline: 2px solid var(--sub);
     outline-offset: 4px;
+}
+
+/* ヘッダー右端の「← ホーム」ボタン */
+.header-home-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 16px;
+    color: var(--text);
+    background: var(--btn-bg);
+    border: 1px solid var(--track);
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: normal;
+    text-decoration: none;
+}
+
+.header-home-button:active {
+    transform: scale(.97);
+}
+
+.header-home-button:focus-visible {
+    outline: 2px solid var(--sub);
+    outline-offset: 3px;
 }
 
 /* 画面中央のまとまり */
