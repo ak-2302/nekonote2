@@ -32,6 +32,13 @@ async function getTasks() {
     return (await response.json()).tasks;
 }
 
+// ログイン中のユーザー（user_id, name, username）
+async function getCurrentUser() {
+    const response = await fetchFromNetwork(`${API_BASE_URL}/me`, { headers: authHeaders() });
+    if (!response.ok) throw apiError(`ユーザーAPI: ${response.status}`, response.status);
+    return (await response.json()).user;
+}
+
 async function getTask(taskId) {
     const response = await fetchFromNetwork(`${TASK_API_URL}/${encodeURIComponent(taskId)}`, {
         headers: authHeaders()
@@ -59,6 +66,15 @@ async function updateTaskDone(taskId, done) {
     });
     if (!response.ok) throw apiError(`タスクAPI: ${response.status}`, response.status);
     return (await response.json()).task;
+}
+
+// タイマー画面を開いたことをサーバーに知らせ、このタスクの以降の通知を止める
+async function markTaskOpened(taskId) {
+    const response = await fetchFromNetwork(`${TASK_API_URL}/${encodeURIComponent(taskId)}/opened`, {
+        method: 'POST',
+        headers: authHeaders()
+    });
+    if (!response.ok) throw apiError(`タスクAPI: ${response.status}`, response.status);
 }
 
 async function login(username, password) {

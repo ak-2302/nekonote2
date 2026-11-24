@@ -39,7 +39,8 @@
             <span class="task-count" id="task_count">0件</span>
         </section>
 
-        <section class="next-task" id="next_task" hidden aria-live="polite">
+        <!-- 直近の予定。タップするとそのタスクのタイマー画面を開く -->
+        <a class="next-task" id="next_task" href="../timer/index.html" hidden aria-live="polite">
             <div class="next-task-heading">
                 <span class="section-label">NEXT UP</span>
                 <span class="next-task-badge"><i class="fa-solid fa-bolt" aria-hidden="true"></i> 直近の予定</span>
@@ -47,7 +48,8 @@
             <p class="next-task-time" id="next_task_time"></p>
             <h2 class="next-task-name" id="next_task_name"></h2>
             <p class="next-task-date" id="next_task_date"></p>
-        </section>
+            <span class="next-task-hint">タップしてタイマーを開く <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+        </a>
 
         <!-- 登録されたタスクが順番に表示されるリスト -->
         <ul id="task_list" aria-live="polite">
@@ -65,52 +67,87 @@
         <span>タスクを追加</span>
     </button>
 
-    <div class="modal-backdrop" id="modal_backdrop" hidden>
-        <!-- タスク入力フォーム（時間・タスク名・登録ボタン） -->
-        <div id="register_container" role="dialog" aria-modal="true" aria-labelledby="dialog_title">
-            <div class="dialog-header">
-                <div>
-                    <h2 id="dialog_title">タスクを追加</h2>
+    <!-- タスク登録シート。画面下から出て、5つのステップを横スクロールで移動する -->
+    <div class="sheet-backdrop" id="sheet_backdrop" hidden>
+        <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="step_title">
+            <!-- この部分を下にドラッグすると閉じる -->
+            <div class="sheet-top" id="sheet_top">
+                <div class="sheet-grip" aria-hidden="true"></div>
+                <div class="sheet-head">
+                    <h2 class="step-title" id="step_title">何をする？</h2>
+                    <button class="close-button" id="close_register" type="button" aria-label="閉じる">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
                 </div>
-                <button class="close-button" id="close_register" type="button" aria-label="閉じる">
-                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                </button>
+                <nav class="step-progress" id="step_progress" aria-label="入力の進み具合"></nav>
             </div>
-            <div class="form-field">
-                <label for="task_name">タスク名</label>
-                <input type="text" id="task_name" placeholder="例：資料を確認する">
+
+            <div class="steps" id="steps">
+                <!-- Step 1: タスク名 -->
+                <section class="step" data-title="何をする？" aria-label="タスク">
+                    <div class="step-body">
+                        <p class="step-hint">タスクをタップすると次へ進みます。「前回」付きは前回の設定が入った状態で始まります。</p>
+                        <div class="chips" id="template_chips"></div>
+                        <div class="inline-input" id="new_task_box" hidden>
+                            <input type="text" id="new_task_input" placeholder="新しいタスク名" enterkeyhint="done" aria-label="新しいタスク名">
+                            <button type="button" id="new_task_submit">決定</button>
+                        </div>
+                        <button class="text-button" type="button" id="toggle_edit">テンプレートを編集</button>
+                    </div>
+                </section>
+
+                <!-- Step 2: 日付 -->
+                <section class="step" data-title="いつやる？" aria-label="日付">
+                    <div class="step-body">
+                        <div class="chips wide" id="date_chips"></div>
+                        <div class="inline-input" id="date_other_box" hidden>
+                            <input type="date" id="date_other_input" aria-label="日付">
+                            <button type="button" id="date_other_submit">決定</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Step 3: 開始時刻 -->
+                <section class="step" data-title="何時から？" aria-label="開始時刻">
+                    <div class="step-body">
+                        <!-- スクロールで選ぶダイヤル。止まっても次へは進まない -->
+                        <div class="time-wheel" role="group" aria-label="開始時刻">
+                            <div class="wheel-column" id="wheel_hour" aria-label="時"></div>
+                            <span class="wheel-separator" aria-hidden="true">:</span>
+                            <div class="wheel-column" id="wheel_minute" aria-label="分"></div>
+                        </div>
+                        <p class="time-note" id="time_note"></p>
+                        <button class="sheet-primary" type="button" id="time_next">次へ</button>
+                    </div>
+                </section>
+
+                <!-- Step 4: 所要時間 -->
+                <section class="step" data-title="どれくらい？" aria-label="所要時間">
+                    <div class="step-body">
+                        <div class="chips wide four" id="duration_chips"></div>
+                        <div class="inline-input" id="duration_other_box" hidden>
+                            <input type="number" id="duration_other_input" min="1" step="1" inputmode="numeric" placeholder="分" aria-label="所要時間（分）">
+                            <button type="button" id="duration_other_submit">決定</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Step 5: 確認 -->
+                <section class="step" data-title="この内容で作成" aria-label="確認">
+                    <div class="step-body">
+                        <p class="summary" id="summary"></p>
+                        <p class="summary-note" id="summary_note"></p>
+                        <div class="option-row">
+                            <button class="pill option off" type="button" id="notify_before" aria-pressed="false">5分前に通知</button>
+                        </div>
+                        <details class="description-details" id="description_details">
+                            <summary>説明を追加（任意）</summary>
+                            <textarea id="task_description" rows="3" placeholder="例：第3章を読み、気づいた点をメモする" aria-label="説明"></textarea>
+                        </details>
+                        <button class="sheet-primary" id="add-btn" type="button">この内容で予定を作成</button>
+                    </div>
+                </section>
             </div>
-            <div class="form-field">
-                <label for="task_date">日付</label>
-                <input type="date" id="task_date">
-            </div>
-            <div class="form-field">
-                <span class="field-label" id="task_time_label">開始時刻</span>
-                <!-- スクロールで選ぶダイヤル。選んだ値は task_time に "HH:MM" で入る -->
-                <div class="time-wheel" role="group" aria-labelledby="task_time_label">
-                    <div class="wheel-column" id="wheel_hour" aria-label="時"></div>
-                    <span class="wheel-separator" aria-hidden="true">:</span>
-                    <div class="wheel-column" id="wheel_minute" aria-label="分"></div>
-                </div>
-                <input type="hidden" id="task_time">
-            </div>
-            <div class="form-field">
-                <label for="task_duration">所要時間（分）</label>
-                <input type="number" id="task_duration" min="1" step="1" inputmode="numeric" placeholder="例：30">
-            </div>
-            <div class="form-field">
-                <span class="field-label">通知</span>
-                <p class="notify-default">開始時刻に通知します</p>
-                <label class="checkbox-field" for="task_notify_before">
-                    <input type="checkbox" id="task_notify_before">
-                    <span>開始5分前にも通知する</span>
-                </label>
-            </div>
-            <div class="form-field">
-                <label for="task_description">説明（任意）</label>
-                <textarea id="task_description" rows="3" placeholder="例：第3章を読み、気づいた点をメモする"></textarea>
-            </div>
-            <button id="add-btn" type="button">登録する</button>
         </div>
     </div>
     <div class="modal-backdrop" id="login_backdrop" hidden>
@@ -132,7 +169,7 @@
         </form>
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite" hidden>
-        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+        <i class="fa-solid fa-circle-exclamation" id="toast_icon" aria-hidden="true"></i>
         <span id="toast_message"></span>
     </div>
     <script src="../asset/api.js"></script>
